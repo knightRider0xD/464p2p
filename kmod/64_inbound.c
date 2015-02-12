@@ -1,48 +1,31 @@
-
-
-#include <linux/kernel.h>
-#include <linux/module.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv6.h>
 #include <linux/ip.h>
+#include <linux/ipv6.h>
 #include <linux/skbuff.h>
+#include <string.h>
+#include "64_inbound.h"
 
-static struct nf_hook_ops nfho;         //netfilter hook options
-struct sk_buff *in_sk_buff;             //inbound packet
-struct iphdr *in_ip_header;             //IP header of inbound packet
-
-// Called when netfilter hook called
-unsigned int on_nf_hook(unsigned int hooknum, struct sk_buff **skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *))
-{
+// On NetFilter hook triggered
+unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
   
-  if (0==0){
+    in_skb = *skb;
+    in_hdr = ipv6_hdr(in_skb);
+    
+    d_464_addr = { { { 0xfe,0x80,0,0,0,0,0,0,0x02,0x50,0x56,0xff,0xfe,0xc0,0,0x09 } } }; //fe80::250:56ff:fec0:9
+    
+    
+    // If packet dest address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
+    if (memcmp(in_hdr->daddr,d_464_addr)){
 #ifdef 464P2P_VERBOSE
-    printk(KERN_INFO "Regular Packet: Passing.\n");
+        printk(KERN_INFO "Regular Packet: Passing.\n");
 #endif
-    return NF_ACCEPT;
-  }
+        return NF_ACCEPT;
+    }
   
+    // If packet dest address is a 464p2p address, convert packet, STOLEN and queue for v4 processing.
 #ifdef 464P2P_VERBOSE
     printk(KERN_INFO "464P2P Packet: Moving to IPv4 queue.\n");
 #endif  
-  return NF_STOLEN;
-}
-
-//Called when module loaded using 'insmod'
-int init_module()
-{
-  nfho.hook = on_nf_hook;                       //function to call when conditions below met
-  nfho.hooknum = NF_IP6_LOCAL_IN;            //called right after packet recieved, first hook in Netfilter
-  nfho.pf = PF_INET;                           //IPV4 packets
-  nfho.priority = NF_IP6_PRI_NAT_SRC;             //set to equal priority as NAT src
-  nf_register_hook(&nfho);                     //register hook
-
-  return 0;                                    //return 0 for success
-}
-
-//Called when module unloaded using 'rmmod'
-void cleanup_module()
-{
-    nf_unregister_hook(&nfho);                     //cleanup – unregister hook
-  
+    return NF_STOLEN;
 }
