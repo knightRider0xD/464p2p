@@ -1,5 +1,6 @@
 struct sk_buff *in_skb;             //inbound packet
-struct ipv6hdr *in_hdr;             //IP header of inbound packet
+struct ipv6hdr *in6_hdr;             //IP header of inbound packet
+struct iphdr *in4_hdr;
 struct in6_addr *d_464_addr;
 
 // On NetFilter hook triggered
