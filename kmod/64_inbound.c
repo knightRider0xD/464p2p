@@ -6,11 +6,11 @@
 #include <linux/string.h>
 #include <net/ip.h>
 #include "64_inbound.h"
-#include "46_outbound.h"
+#include "464_tables.h"
 
 
 // New packet header
-in4_hdr = (struct iphdr*) kcalloc(40);
+in4_hdr = (struct iphdr*) kcalloc(sizeof(struct iphdr));
 in4_hdr->ihl         = 10; //size of IPv6 Header
 in4_hdr->version     = 4;
 //in4_hdr->check       = 0; // Ignore checksum should have already passed checksum
@@ -41,15 +41,23 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     struct in_addr *d_4_addr = local_64_xlat(in6_hdr->daddr);
     
     // Collate new v4 header values
-    in4_hdr->tot_len     = 40+in6_hdr->payload_len; // total length = header size (40 bytes + v6 payload size)
+    in4_hdr->tot_len     = sizeof(struct iphdr)+in6_hdr->payload_len; // total length = header size (40 bytes + v6 payload size)
     in4_hdr->protocol    = in6_hdr->nexthdr;
     in4_hdr->saddr       = s_4_addr;
     in4_hdr->daddr       = d_4_addr;
     in4_hdr->ttl         = in6_hdr->hop_limit;
     in4_hdr->tos         = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
     
-    // Write new v4 header over v6 header
-    memcpy(in6_hdr,in4_hdr,40);
+    
+    // Remove IPv6 header
+    skb_pull(in_skb, sizeof(struct ipv6hdr));
+    
+    // Allocate IPv4 header
+    // skb_realloc_headroom(in_skb, 48)
+    in_skb->nh.raw = skb_push(in_skb, sizeof(struct iphdr));
+    
+    // Write new v4 header data
+    memcpy(in_skb->nh.raw,in4_hdr, sizeof(struct iphdr));
     
 #ifdef 464P2P_VERBOSE
     printk(KERN_INFO "Moving to IPv4 queue.\n");
@@ -60,18 +68,3 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     return NF_STOLEN;
 }
 
-/**
- * Function to translate local IPv6 Address to its local IPv4 address
- */
-in_addr local_64_xlat(in6_addr *local_6_addr){
-    return s_464_addr;
-}
-
-/**
- * Function to translate remote IPv6 Address to a corresponding remote IPv4 address
- */
-in_addr remote_64_xlat(in6_addr *remote_6_addr){
-    struct in_addr *remote_4_addr;
-    inet_pton(AF_INET,"192.168.5.1",remote_4_addr);
-    return remote_4_addr;
-}
