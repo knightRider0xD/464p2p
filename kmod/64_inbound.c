@@ -26,19 +26,25 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     // If packet dest address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
     if (memcmp(in6_hdr->daddr,d_464_addr)){
 #ifdef 464P2P_VERBOSE
-        printk(KERN_INFO "Regular Packet: Passing.\n");
+        printk(KERN_INFO "[464P2P] Regular Packet; Passing.\n");
 #endif
         return NF_ACCEPT;
     }
     
     // If packet dest address is a 464p2p address, convert packet, STOLEN and queue for v4 processing.
 #ifdef 464P2P_VERBOSE
-    printk(KERN_INFO "464P2P Packet: Converting 6->4 ...");
+    printk(KERN_INFO "[464P2P] My Packet; Converting 6->4 ...");
 #endif  
     
     // XLAT v6 addresses
     struct in_addr *s_4_addr = remote_64_xlat(in6_hdr->saddr);
     struct in_addr *d_4_addr = local_64_xlat(in6_hdr->daddr);
+    
+    if(s_4_addr==NULL){
+#ifdef 464P2P_VERBOSE
+        printk(KERN_INFO "[464P2P] Remote address not found; Dropping");
+#endif        
+    }
     
     // Collate new v4 header values
     in4_hdr->tot_len     = sizeof(struct iphdr)+in6_hdr->payload_len; // total length = header size (40 bytes + v6 payload size)
@@ -60,7 +66,7 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     memcpy(in_skb->nh.raw,in4_hdr, sizeof(struct iphdr));
     
 #ifdef 464P2P_VERBOSE
-    printk(KERN_INFO "Moving to IPv4 queue.\n");
+    printk(KERN_INFO "[464P2P] 6->4 XLAT Done; Moving to IPv4 queue.\n");
 #endif
     
     ip_local_deliver(in_skb);
