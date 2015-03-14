@@ -10,5 +10,67 @@
 
 // On NetFilter hook triggered
 unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)){
-    return 0;
+
+    out_skb = *skb;
+    out4_hdr = ip_hdr(out_skb);
+    
+    // XLAT v4 local address
+    struct in_addr *s_6_addr = local_46_xlat(out4_hdr->saddr);
+    
+    // If packet src address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
+    if (memcmp(out4_hdr->saddr,s_464_addr)){
+#ifdef 464P2P_VERBOSE
+        printk(KERN_INFO "[464P2P] OUT; Regular Packet; Passing.\n");
+#endif
+        return NF_ACCEPT;
+    }
+    
+    // If packet dest address is a 464p2p address, convert packet, STOLEN and queue for v4 processing.
+#ifdef 464P2P_VERBOSE
+    printk(KERN_INFO "[464P2P] OUT; My Packet; Converting 4->6 ...");
+#endif  
+    
+    // XLAT v4 remote address
+    struct in_addr *d_6_addr = remote_46_xlat(out4_hdr->daddr);
+    
+    if(s_4_addr==NULL){
+#ifdef 464P2P_VERBOSE
+        printk(KERN_INFO "[464P2P] OUT; Remote address not found; Dropping");
+#endif        
+    }
+    
+    /*/ Collate new v6 header values
+    in4_hdr->tot_len     = sizeof(struct iphdr)+in6_hdr->payload_len; // total length = header size (40 bytes + v6 payload size)
+    in4_hdr->protocol    = in6_hdr->nexthdr;
+    in4_hdr->saddr       = s_4_addr;
+    in4_hdr->daddr       = d_4_addr;
+    in4_hdr->ttl         = in6_hdr->hop_limit;
+    in4_hdr->tos         = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
+    */
+    // Collate new v6 header values
+    out6_hdr->payload_len     = out4_hdr->tot_len-sizeof(struct iphdr); // payload length = total length - header size
+    out6_hdr->nexthdr         = out4_hdr->protocol;
+    out6_hdr->saddr           = s_6_addr;
+    out6_hdr->daddr           = d_6_addr;
+    out6_hdr->hop_limit        = out4_hdr->ttl;
+    //in4_hdr->tos         = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);    
+    
+    // Remove IPv6 header
+    skb_pull(in_skb, sizeof(struct ipv6hdr));
+    
+    // Allocate IPv4 header
+    // skb_realloc_headroom(in_skb, 48)
+    in_skb->nh.raw = skb_push(in_skb, sizeof(struct iphdr));
+    
+    // Write new v4 header data
+    memcpy(in_skb->nh.raw,in4_hdr, sizeof(struct iphdr));
+    
+#ifdef 464P2P_VERBOSE
+    printk(KERN_INFO "[464P2P] 6->4 XLAT Done; Moving to IPv4 queue.\n");
+#endif
+    
+    ip_local_deliver(in_skb);
+    
+    return NF_STOLEN;
 }
+

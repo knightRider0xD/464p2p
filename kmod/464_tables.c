@@ -108,7 +108,7 @@ int local_xlat_add(in6_addr *local_6_addr, in_addr *local_4_addr){
         .linked_list_data = 0; // initialised when added to linked list
     };
     
-    hash_add(xlat_46, &new_entry_46.next, new_entry_46.in4);
+    //list_add(xlat_46, &new_entry_46.next, new_entry_46.in4);
     
     
 }

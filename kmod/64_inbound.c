@@ -22,27 +22,29 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
   
     in_skb = *skb;
     in6_hdr = ipv6_hdr(in_skb);
+
+    // XLAT v6 local address
+    struct in_addr *d_4_addr = local_64_xlat(in6_hdr->daddr);
     
     // If packet dest address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
-    if (memcmp(in6_hdr->daddr,d_464_addr)){
+    if (memcmp(in6_hdr->daddr,d_4_addr)){
 #ifdef 464P2P_VERBOSE
-        printk(KERN_INFO "[464P2P] Regular Packet; Passing.\n");
+        printk(KERN_INFO "[464P2P] IN; Regular Packet; Passing.\n");
 #endif
         return NF_ACCEPT;
     }
     
     // If packet dest address is a 464p2p address, convert packet, STOLEN and queue for v4 processing.
 #ifdef 464P2P_VERBOSE
-    printk(KERN_INFO "[464P2P] My Packet; Converting 6->4 ...");
+    printk(KERN_INFO "[464P2P] IN; My Packet; Converting 6->4 ...");
 #endif  
     
-    // XLAT v6 addresses
+    // XLAT v6 remote address
     struct in_addr *s_4_addr = remote_64_xlat(in6_hdr->saddr);
-    struct in_addr *d_4_addr = local_64_xlat(in6_hdr->daddr);
     
     if(s_4_addr==NULL){
 #ifdef 464P2P_VERBOSE
-        printk(KERN_INFO "[464P2P] Remote address not found; Dropping");
+        printk(KERN_INFO "[464P2P] IN; Remote address not found; Dropping");
 #endif        
     }
     
@@ -74,3 +76,6 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     return NF_STOLEN;
 }
 
+struct skbuff* xlat_64(){
+    return;
+}
