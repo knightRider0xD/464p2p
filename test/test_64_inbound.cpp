@@ -1,7 +1,12 @@
 #include <gtest/gtest.h> 
-#include "64_inbound.c"
+#include "64_inbound.h"
 
-// Tests factorial of 0.
+// Tests .
 TEST(Xlat64, ConvertHeaders) {
   ASSERT_TRUE(1);
+}
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
