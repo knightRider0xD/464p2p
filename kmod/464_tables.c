@@ -12,8 +12,8 @@
  * Init functions for XLAT table
  ********************************/
 
-char static_table = "";
-char dynamic_table = "";
+char static_table[] = "";
+char dynamic_table[] = "";
 char static_entry[56] = "";
 char dynamic_entry[56] = "";
 
@@ -69,7 +69,51 @@ void cleanup_tables(void)
  * XLAT Tables
  ********************************/
 
+/**
+ * Function to parse XLAT Entry from string
+ */
+int xlat_add(char xlat_str[]){
+    
+    char addr_6[40];
+    strncpy(addr_6,xlat_str,39);
+    
+    in6_addr in6 = kmalloc(sizeof in6_addr,);
+    
+    if(inet_pton(AF_INET6,addr_6,in6)<=0){
+        return 1;
+    }
+    
+    
+    char addr_4[16]
+    strncpy(addr_4,xlat_str+40,15);
+    
+    in_addr in4 = kmalloc(sizeof in_addr,);
+    
+    if(inet_pton(AF_INET,addr_4,in4)<=0){
+        return 2;
+    }
+    
+    return remote_xlat_add(in6, in4);
+    
+}
 
+/**
+ * Function to parse static XLAT Entry
+ */
+int static_xlat_add(){
+    
+    return xlat_add(static_entry);
+    
+}
+
+/**
+ * Function to parse dynamic XLAT Entry
+ */
+int dynamic_xlat_add(){
+    
+    return xlat_add(dynamic_entry);
+    
+}
 
 
 /**
