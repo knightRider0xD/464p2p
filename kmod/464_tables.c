@@ -80,6 +80,7 @@ int xlat_add(char xlat_str[]){
     in6_addr in6 = kmalloc(sizeof in6_addr,);
     
     if(inet_pton(AF_INET6,addr_6,in6)<=0){
+        kfree(in6);
         return 1;
     }
     
@@ -90,6 +91,8 @@ int xlat_add(char xlat_str[]){
     in_addr in4 = kmalloc(sizeof in_addr,);
     
     if(inet_pton(AF_INET,addr_4,in4)<=0){
+        kfree(in6);
+        kfree(in4);
         return 2;
     }
     
