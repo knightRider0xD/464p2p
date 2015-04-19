@@ -2,6 +2,7 @@
 #include <linux/sysctl.h>
 #include <linux/hastable.h>
 #include <linux/linkedlist.h>
+#include <linux/string.h>
 #include <linux/ip.h>
 #include <linux/ipv6.h>
 #include <uapi/linux/in.h>
@@ -169,7 +170,7 @@ int local_xlat_add(in6_addr *local_6_addr, in_addr *local_4_addr){
 /**
  * Function to translate local IPv6 Address to its local IPv4 address
  */
-in_addr local_64_xlat(in6_addr *local_6_addr){
+in_addr * local_64_xlat(in6_addr *local_6_addr){
     
     //for entries in ll
         //check if match
@@ -182,7 +183,7 @@ in_addr local_64_xlat(in6_addr *local_6_addr){
 /**
  * Function to translate local IPv6 Address to its local IPv4 address
  */
-in6_addr local_46_xlat(in_addr *local_4_addr){
+in6_addr * local_46_xlat(in_addr *local_4_addr){
     
     //for entries in ll
         //check if match
@@ -195,13 +196,18 @@ in6_addr local_46_xlat(in_addr *local_4_addr){
 /**
  * Function to translate remote IPv6 Address to a corresponding remote IPv4 address
  */
-in_addr remote_64_xlat(in6_addr *remote_6_addr){
+in_addr * remote_64_xlat(in6_addr *remote_6_addr){
     
     //hash lookup
-    //for entries in hash bucket ll
-        //check if match
-        //if yes move to head of hash bucket list
-        //return entry
+    struct xlat_entry * current; // Pointer to current position in XLAT table
+    hash_for_each_possible(xlat_64, current, hash_list_data, *remote_6_addr){
+        
+        // If match return pointer to corresponding IPv4 address
+        if(!memcmp(current->in6,remote_6_addr)){
+            //TODO Move to head
+            return current->in4;
+        }
+    }
     
     return NULL;  //No match found
 }
@@ -209,15 +215,21 @@ in_addr remote_64_xlat(in6_addr *remote_6_addr){
 /**
  * Function to translate remote IPv6 Address to a corresponding remote IPv4 address
  */
-in6_addr remote_46_xlat(in_addr *remote_4_addr){
+in6_addr * remote_46_xlat(in_addr *remote_4_addr){
     
     //hash lookup
-    //for entries in hash bucket ll
-        //check if match
-        //if yes move to head of hash bucket list
-        //return entry
+    struct xlat_entry * current; // Pointer to current position in XLAT table
+    hash_for_each_possible(xlat_46, current, hash_list_data, *remote_4_addr){
+        
+        // If match return pointer to corresponding IPv4 address
+        if(!memcmp(current->in4,remote_4_addr)){
+            //TODO Move to head
+            return current->in6;
+        }
+    }
     
-    return NULL; //No match found
+    return NULL;  //No match found
+    
     //struct in_addr *remote_4_addr;
     //inet_pton(AF_INET,"192.168.5.1",remote_4_addr);
     //return remote_4_addr;

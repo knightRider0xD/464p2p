@@ -13,8 +13,8 @@
 in4_hdr = (struct iphdr*) kcalloc(sizeof(struct iphdr));
 in4_hdr->ihl         = 10; //size of IPv6 Header
 in4_hdr->version     = 4;
-//in4_hdr->check       = 0; // Ignore checksum should have already passed checksum
-//in4_hdr->id          = 0; // Ignore packet ID packet is unfragmented
+//in4_hdr->check       = 0; // Ignore checksum; should have already passed checksum
+//in4_hdr->id          = 0; // Ignore packet ID; packet is unfragmented
 //in4_hdr->frag_off    = 0; // Ignore fragmentation offset & flags packet is unfragmented
 
 // On NetFilter hook triggered
