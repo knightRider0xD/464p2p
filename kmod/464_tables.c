@@ -156,7 +156,7 @@ int local_xlat_add(in6_addr *local_6_addr, in_addr *local_4_addr){
         .linked_list_data = 0; // initialised when added to linked list
     };
     
-    //list_add(xlat_46, &new_entry_46.next, new_entry_46.in4);
+    list_add(&new_entry,xlat_local);
     
     
 }
@@ -172,10 +172,16 @@ int local_xlat_add(in6_addr *local_6_addr, in_addr *local_4_addr){
  */
 in_addr * local_64_xlat(in6_addr *local_6_addr){
     
-    //for entries in ll
-        //check if match
-        //if yes move to head of list
-        //return entry
+    //list lookup
+    struct host_entry * current; // Pointer to current position in XLAT list
+    list_for_each(current, xlat_local){
+        
+        // If match return pointer to corresponding IPv4 address
+        if(!memcmp(current->in6,local_6_addr)){
+            //TODO Move to head
+            return current->in4;
+        }
+    }
     
     return NULL;  //No match found
 }
@@ -185,10 +191,16 @@ in_addr * local_64_xlat(in6_addr *local_6_addr){
  */
 in6_addr * local_46_xlat(in_addr *local_4_addr){
     
-    //for entries in ll
-        //check if match
-        //if yes move to head of list
-        //return entry
+    //list lookup
+    struct host_entry * current; // Pointer to current position in XLAT list
+    list_for_each(current, xlat_local){
+        
+        // If match return pointer to corresponding IPv4 address
+        if(!memcmp(current->in4,local_4_addr)){
+            //TODO Move to head
+            return current->in6;
+        }
+    }
     
     return NULL;  //No match found
 }
