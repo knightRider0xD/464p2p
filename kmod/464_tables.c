@@ -47,10 +47,10 @@ static ctl_table root_table[] = {
 
 static struct ctl_table_header *ctl_table_header;
 
-int init_tables(void)
+int init_tables()
 {
     ctl_table_header = register_sysctl_table(root_table,0);
-    return ctl_table_header;
+    //return ctl_table_header;
    
    
     DEFINE_HASHTABLE(xlat_46, 16);
@@ -58,10 +58,11 @@ int init_tables(void)
 
     LIST_HEAD(xlat_local);
 
+    return 0;
     
 }
 
-void cleanup_tables(void)
+void cleanup_tables()
 {
     unregister_sysctl_table(ctl_table_header);
 }
@@ -141,6 +142,7 @@ int remote_xlat_add(in6_addr *remote_6_addr, in_addr *remote_4_addr){
     
     hash_add(xlat_64, &new_entry_64.next, new_entry_64.in6);
     
+    return 0;
     
 }
 
@@ -158,6 +160,7 @@ int local_xlat_add(in6_addr *local_6_addr, in_addr *local_4_addr){
     
     list_add(&new_entry,xlat_local);
     
+    return 0;
     
 }
 

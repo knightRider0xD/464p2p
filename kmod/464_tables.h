@@ -14,3 +14,15 @@ struct host_entry {
      in_addr *in4;
      struct list_head linked_list_data;
 };
+
+int init_tables();
+void cleanup_tables();
+
+int static_xlat_add();
+int dynamic_xlat_add();
+int local_xlat_add(in6_addr *local_6_addr, in_addr *local_4_addr);
+
+in_addr * local_64_xlat(in6_addr *local_6_addr);
+in6_addr * local_46_xlat(in_addr *local_4_addr);
+in_addr * remote_64_xlat(in6_addr *remote_6_addr);
+in6_addr * remote_46_xlat(in_addr *remote_4_addr);
