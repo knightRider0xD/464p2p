@@ -62,9 +62,12 @@ int init_tables()
     
 }
 
-void cleanup_tables()
+int cleanup_tables()
 {
-    unregister_sysctl_table(ctl_table_header);
+    if(ctl_table_header!=NULL){
+        unregister_sysctl_table(ctl_table_header);
+    }
+    return 0;
 }
 
 /********************************

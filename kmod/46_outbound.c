@@ -39,37 +39,31 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
 #endif        
     }
     
-    /*/ Collate new v6 header values
-    in4_hdr->tot_len     = sizeof(struct iphdr)+in6_hdr->payload_len; // total length = header size (40 bytes + v6 payload size)
-    in4_hdr->protocol    = in6_hdr->nexthdr;
-    in4_hdr->saddr       = s_4_addr;
-    in4_hdr->daddr       = d_4_addr;
-    in4_hdr->ttl         = in6_hdr->hop_limit;
-    in4_hdr->tos         = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
-    */
     // Collate new v6 header values
     out6_hdr->payload_len     = out4_hdr->tot_len-sizeof(struct iphdr); // payload length = total length - header size
     out6_hdr->nexthdr         = out4_hdr->protocol;
     out6_hdr->saddr           = s_6_addr;
     out6_hdr->daddr           = d_6_addr;
     out6_hdr->hop_limit        = out4_hdr->ttl;
-    //in4_hdr->tos         = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);    
+    out6_hdr->priority = (out4_hdr->tos>>4);
+    out6_hdr->flow_lbl[0] = ((out4_hdr->tos&15)<<4);// + current flow label value (does not exist)
     
-    // Remove IPv6 header
-    skb_pull(in_skb, sizeof(struct ipv6hdr));
+    // Remove IPv4 header
+    skb_pull(out_skb, sizeof(struct iphdr));
     
-    // Allocate IPv4 header
-    // skb_realloc_headroom(in_skb, 48)
-    in_skb->nh.raw = skb_push(in_skb, sizeof(struct iphdr));
+    // Allocate IPv6 header
+    //need to delete old skb after
+    //skb_realloc_headroom(out_skb, sizeof(struct ipv6hdr));
+    out_skb->nh.raw = skb_push(out_skb, sizeof(struct ipv6hdr));
     
     // Write new v4 header data
-    memcpy(in_skb->nh.raw,in4_hdr, sizeof(struct iphdr));
+    memcpy(out_skb->nh.raw,out6_hdr, sizeof(struct ipv6hdr));
     
 #ifdef 464P2P_VERBOSE
-    printk(KERN_INFO "[464P2P] 6->4 XLAT Done; Moving to IPv4 queue.\n");
+    printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Moving to IPv6 queue.\n");
 #endif
     
-    ip_local_deliver(in_skb);
+    ip_local_deliver(out_skb);
     
     return NF_STOLEN;
 }

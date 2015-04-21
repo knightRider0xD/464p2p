@@ -68,7 +68,7 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     memcpy(in_skb->nh.raw,in4_hdr, sizeof(struct iphdr));
     
 #ifdef 464P2P_VERBOSE
-    printk(KERN_INFO "[464P2P] 6->4 XLAT Done; Moving to IPv4 queue.\n");
+    printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Moving to IPv4 queue.\n");
 #endif
     
     ip_local_deliver(in_skb);

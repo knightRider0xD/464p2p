@@ -16,7 +16,7 @@ struct host_entry {
 };
 
 int init_tables();
-void cleanup_tables();
+int cleanup_tables();
 
 int static_xlat_add();
 int dynamic_xlat_add();

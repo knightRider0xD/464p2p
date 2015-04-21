@@ -67,5 +67,6 @@ void cleanup_module()
 {
     // remove hooks
     nf_unregister_hook(&in_nfho);
+    cleanup_tables();
     //nf_unregister_hook(&out_nfho);
 } 
