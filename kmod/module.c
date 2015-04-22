@@ -8,6 +8,7 @@
 #include <linux/hashtable.h>
 #include <arpa/inet.h>
 #include <linux/string.h>
+#include <linux/delay.h>
 
 #include "64_inbound.h"
 #include "46_outbound.h"
@@ -46,6 +47,15 @@ int init_module() {
         printk(KERN_INFO "Invalid IPv6 Address\n");
         return 1;
     }
+    
+    init_tables();
+    
+    // Load initial static entries to table
+    int static_table_status = 1;
+    do {
+        static_table_status = static_xlat_add();
+        msleep(10);
+    } while (static_table_status == 0);
     
     in_nfho.hook = on_nf_hook_in;                       //function to call when conditions below met
     in_nfho.hooknum = NF_IP6_LOCAL_IN;            //After IPv6 packet routed and before local delivery

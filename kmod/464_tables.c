@@ -110,7 +110,10 @@ int xlat_add(char xlat_str[]){
  */
 int static_xlat_add(){
     
+    //Check entry if done, next or new
+    //
     return xlat_add(static_entry);
+    //write result
     
 }
 
