@@ -3,20 +3,26 @@
 #include <linux/hastable.h>
 #include <linux/linkedlist.h>
 #include <linux/string.h>
+
+/*
+ * Included in 464_tables.h
+ * 
 #include <linux/ip.h>
 #include <linux/ipv6.h>
 #include <uapi/linux/in.h>
 #include <uapi/linux/in6.h>
+*/
+
 #include "464_tables.h"
 
 /********************************
  * Init functions for XLAT table
  ********************************/
 
-char static_table[] = "";
-char dynamic_table[] = "";
-char static_entry[56] = "";
-char dynamic_entry[56] = "";
+char static_table[] = "0";
+char dynamic_table[] = "0";
+char static_entry[56] = "0";
+char dynamic_entry[56] = "0";
 
 xlat_entry out_addr_cache;
 xlat_entry in_addr_cache;
@@ -86,7 +92,7 @@ int xlat_add(char xlat_str[]){
     
     if(inet_pton(AF_INET6,addr_6,in6)<=0){
         kfree(in6);
-        return 1;
+        return -1;
     }
     
     
@@ -98,7 +104,7 @@ int xlat_add(char xlat_str[]){
     if(inet_pton(AF_INET,addr_4,in4)<=0){
         kfree(in6);
         kfree(in4);
-        return 2;
+        return -2;
     }
     
     return remote_xlat_add(in6, in4);
@@ -111,9 +117,21 @@ int xlat_add(char xlat_str[]){
 int static_xlat_add(){
     
     //Check entry if done, next or new
-    //
-    return xlat_add(static_entry);
-    //write result
+    if (!strncmp(static_entry,"0",2)){
+        //Already done
+        return 0;
+    } else if (!strncmp(static_entry,"1",2)){
+        //No more
+        return 1;
+    }
+    
+    //New entry to process
+    int res = xlat_add(static_entry);
+    if(res>=0){
+        //Processed entry okay? Yes; acknowledge via sysctl for userspace interface to continue.
+        strncpy(static_entry,"0",2);
+    }
+    return res;
     
 }
 
@@ -122,6 +140,7 @@ int static_xlat_add(){
  */
 int dynamic_xlat_add(){
     
+    //Not yet implemented
     return xlat_add(dynamic_entry);
     
 }

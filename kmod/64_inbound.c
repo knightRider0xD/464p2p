@@ -8,6 +8,10 @@
 #include "64_inbound.h"
 #include "464_tables.h"
 
+struct sk_buff *in_skb;             //inbound packet
+struct ipv6hdr *in6_hdr;            //IPv6 header of inbound packet
+struct iphdr *in4_hdr;              //New IPv4 header for inbound packet
+struct in6_addr *d_464_addr;        //IPv
 
 // New packet header
 in4_hdr = (struct iphdr*) kcalloc(sizeof(struct iphdr));
@@ -74,8 +78,4 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     ip_local_deliver(in_skb);
     
     return NF_STOLEN;
-}
-
-struct skbuff* xlat_64(){
-    return;
 }
