@@ -3,6 +3,7 @@
 #include <linux/hastable.h>
 #include <linux/linkedlist.h>
 #include <linux/string.h>
+#include <linux/kernel.h>
 
 /*
  * Included in 464_tables.h
@@ -273,4 +274,31 @@ in6_addr * remote_46_xlat(in_addr *remote_4_addr){
     //struct in_addr *remote_4_addr;
     //inet_pton(AF_INET,"192.168.5.1",remote_4_addr);
     //return remote_4_addr;
+}
+
+
+/********************************
+ * pton Functions
+ ********************************/
+
+
+/**
+ * Function to convert dotted decimal IPv4 address string to in_addr structure
+ */
+in_addr * in4_pton(const char *str){
+    
+    if(strlen(str))!=15){
+        return NULL;  //Unable to convert
+    }
+    
+    return NULL;  //Unable to convert
+    
+}
+
+/**
+ * Function to convert colon-separated hexadecimal IPv6 address string to in6_addr structure
+ */
+in6_addr * in6_pton(const char *str){
+    
+    return NULL;  //Unable to convert
 }
