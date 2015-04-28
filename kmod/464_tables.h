@@ -26,3 +26,6 @@ in_addr * local_64_xlat(in6_addr *local_6_addr);
 in6_addr * local_46_xlat(in_addr *local_4_addr);
 in_addr * remote_64_xlat(in6_addr *remote_6_addr);
 in6_addr * remote_46_xlat(in_addr *remote_4_addr);
+
+int in4_pton(char *str, in_addr *target_addr);
+int in6_pton(char *str, in6_addr *target_addr);

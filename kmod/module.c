@@ -6,7 +6,6 @@
 #include <linux/netfilter_ipv6.h>
 #include <linux/netfilter_ipv4.h>
 #include <linux/hashtable.h>
-#include <arpa/inet.h>
 #include <linux/string.h>
 #include <linux/delay.h>
 
@@ -23,7 +22,7 @@ static struct nf_hook_ops in_nfho;
 static struct nf_hook_ops out_nfho;
 
 //Module Args
-static char xlatArray[] = {};
+static char xlatArray[];
 static int xlatArray_count = 0;
 module_param_array(xlatArray, char[], &xlatArray_count, 0000);
 //TODO MODULE_PARM_DESC(xlatArray, "A table of IPv4 to IPv6 address mappings in the format \"IPv4 Address 1\",\"IPv6 Address 1\",\"IPv4 Address 2\",\"IPv6 Address 2\",...");
@@ -38,12 +37,12 @@ int init_module() {
         return 1;
     }
     
-    if(inet_pton(AF_INET,xlatArray[0],s_464_addr)!=1){
+    if(in4_pton(xlatArray[0],s_464_addr)!=0){
         printk(KERN_INFO "Invalid IPv4 Address\n");
         return 1;
     }
     
-    if(inet_pton(AF_INET6,xlatArray[1],d_464_addr)!=1){
+    if(in6_pton(xlatArray[1],d_464_addr)!=0){
         printk(KERN_INFO "Invalid IPv6 Address\n");
         return 1;
     }
