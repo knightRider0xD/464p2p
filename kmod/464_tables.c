@@ -287,11 +287,32 @@ in6_addr * remote_46_xlat(in_addr *remote_4_addr){
  */
 in_addr * in4_pton(const char *str){
     
+    //Test for proper addr len
     if(strlen(str))!=15){
         return NULL;  //Unable to convert
     }
     
-    return NULL;  //Unable to convert
+    // convert octets
+    char buf[4];
+    long a = 0;
+    long b = 0;
+    long c = 0;
+    long d = 0;
+    
+    strncpy(buf,&str[0],3);
+    kstrtol(buf,10,&a);
+    
+    strncpy(buf,&str[4],3);
+    kstrtol(buf,10,&b);
+    
+    strncpy(buf,&str[8],3);
+    kstrtol(buf,10,&c);
+    
+    strncpy(buf,&str[12],3);
+    kstrtol(buf,10,&d);
+    
+    in_addr addr = {{(char)a,(char)b,(char)c,(char)d}};
+    return &addr;
     
 }
 
@@ -300,5 +321,70 @@ in_addr * in4_pton(const char *str){
  */
 in6_addr * in6_pton(const char *str){
     
-    return NULL;  //Unable to convert
+    //Test for proper addr len
+    if(strlen(str))!=15){
+        return NULL;  //Unable to convert
+    }
+    
+    // convert octets
+    char buf[3];
+    long a1 = 0;
+    long a2 = 0;
+    long b1 = 0;
+    long b2 = 0;
+    long c1 = 0;
+    long c2 = 0;
+    long d1 = 0;
+    long d2 = 0;
+    long e1 = 0;
+    long e2 = 0;
+    long f1 = 0;
+    long f2 = 0;
+    long g1 = 0;
+    long g2 = 0;
+    long h1 = 0;
+    long h2 = 0;
+    
+    strncpy(buf,&str[0],2);
+    kstrtol(buf,16,&a1);
+    strncpy(buf,&str[2],2);
+    kstrtol(buf,16,&a2);
+    
+    strncpy(buf,&str[5],2);
+    kstrtol(buf,16,&b1);
+    strncpy(buf,&str[7],2);
+    kstrtol(buf,16,&b2);
+    
+    strncpy(buf,&str[10],2);
+    kstrtol(buf,16,&c1);
+    strncpy(buf,&str[12],2);
+    kstrtol(buf,16,&c2);
+    
+    strncpy(buf,&str[15],2);
+    kstrtol(buf,16,&d1);
+    strncpy(buf,&str[17],2);
+    kstrtol(buf,16,&d2);
+    
+    strncpy(buf,&str[20],2);
+    kstrtol(buf,16,&e1);
+    strncpy(buf,&str[22],2);
+    kstrtol(buf,16,&e2);
+    
+    strncpy(buf,&str[25],2);
+    kstrtol(buf,16,&f1);
+    strncpy(buf,&str[27],2);
+    kstrtol(buf,16,&f2);
+    
+    strncpy(buf,&str[30],2);
+    kstrtol(buf,16,&g1);
+    strncpy(buf,&str[32],2);
+    kstrtol(buf,16,&g2);
+    
+    strncpy(buf,&str[35],2);
+    kstrtol(buf,16,&h1);
+    strncpy(buf,&str[37],2);
+    kstrtol(buf,16,&h2);
+    
+    in6_addr addr = {{(char)a1,(char)a2,(char)b1,(char)b2,(char)c1,(char)c2,(char)d1,(char)d2,(char)e1,(char)e2,(char)f1,(char)f2,(char)g1,(char)g2,(char)h1,(char)h2}};
+    return &addr;
 }
