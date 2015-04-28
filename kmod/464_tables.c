@@ -285,106 +285,92 @@ in6_addr * remote_46_xlat(in_addr *remote_4_addr){
 /**
  * Function to convert dotted decimal IPv4 address string to in_addr structure
  */
-in_addr * in4_pton(const char *str){
+int in4_pton(char *str, in_addr *target_addr){
     
     //Test for proper addr len
     if(strlen(str))!=15){
-        return NULL;  //Unable to convert
+        return 1;  //Unable to convert
     }
     
-    // convert octets
+    // setup buffers
     char buf[4];
-    long a = 0;
-    long b = 0;
-    long c = 0;
-    long d = 0;
+    long lval = 0;
+    uint32_t wrk = 0;
     
-    strncpy(buf,&str[0],3);
-    kstrtol(buf,10,&a);
+    // convert octet a
+    strncpy(buf,&str[0],3); //extract octet chars from string
+    kstrtol(buf,10,&lval); // convert to long
+    if (lval<0){ // if did not convert, set octet to 0
+        lval=0;
+    }
+    wrk += (uint32_t) lval; // add to working addr
+    wrk <<= 8; // shift octet over to make room for next one
     
+    // convert octet b
     strncpy(buf,&str[4],3);
-    kstrtol(buf,10,&b);
+    kstrtol(buf,10,&lval);
+    if (lval<0){
+        lval=0;
+    }
+    wrk += (uint32_t) lval;
+    wrk <<= 8;
     
+    // convert octet c
     strncpy(buf,&str[8],3);
-    kstrtol(buf,10,&c);
+    kstrtol(buf,10,&lval);
+    if (lval<0){
+        lval=0;
+    }
+    wrk += (uint32_t) lval;
+    wrk <<= 8;
     
+    // convert octet d
     strncpy(buf,&str[12],3);
-    kstrtol(buf,10,&d);
+    kstrtol(buf,10,&lval);
+    if (lval<0){
+        lval=0;
+    }
+    wrk += (uint32_t) lval;
     
-    in_addr addr = {{(char)a,(char)b,(char)c,(char)d}};
-    return &addr;
+    target_addr->s_addr = wrk;
+    return 0;
     
 }
 
 /**
  * Function to convert colon-separated hexadecimal IPv6 address string to in6_addr structure
  */
-in6_addr * in6_pton(const char *str){
+int in6_pton(char *str, in6_addr *target_addr){
     
     //Test for proper addr len
-    if(strlen(str))!=15){
-        return NULL;  //Unable to convert
+    if(strlen(str))!=39){
+        return 1;  //Unable to convert
     }
     
-    // convert octets
+    // setup buffers
     char buf[3];
-    long a1 = 0;
-    long a2 = 0;
-    long b1 = 0;
-    long b2 = 0;
-    long c1 = 0;
-    long c2 = 0;
-    long d1 = 0;
-    long d2 = 0;
-    long e1 = 0;
-    long e2 = 0;
-    long f1 = 0;
-    long f2 = 0;
-    long g1 = 0;
-    long g2 = 0;
-    long h1 = 0;
-    long h2 = 0;
+    long lval = 0;
     
-    strncpy(buf,&str[0],2);
-    kstrtol(buf,16,&a1);
-    strncpy(buf,&str[2],2);
-    kstrtol(buf,16,&a2);
-    
-    strncpy(buf,&str[5],2);
-    kstrtol(buf,16,&b1);
-    strncpy(buf,&str[7],2);
-    kstrtol(buf,16,&b2);
-    
-    strncpy(buf,&str[10],2);
-    kstrtol(buf,16,&c1);
-    strncpy(buf,&str[12],2);
-    kstrtol(buf,16,&c2);
-    
-    strncpy(buf,&str[15],2);
-    kstrtol(buf,16,&d1);
-    strncpy(buf,&str[17],2);
-    kstrtol(buf,16,&d2);
-    
-    strncpy(buf,&str[20],2);
-    kstrtol(buf,16,&e1);
-    strncpy(buf,&str[22],2);
-    kstrtol(buf,16,&e2);
-    
-    strncpy(buf,&str[25],2);
-    kstrtol(buf,16,&f1);
-    strncpy(buf,&str[27],2);
-    kstrtol(buf,16,&f2);
-    
-    strncpy(buf,&str[30],2);
-    kstrtol(buf,16,&g1);
-    strncpy(buf,&str[32],2);
-    kstrtol(buf,16,&g2);
-    
-    strncpy(buf,&str[35],2);
-    kstrtol(buf,16,&h1);
-    strncpy(buf,&str[37],2);
-    kstrtol(buf,16,&h2);
-    
-    in6_addr addr = {{(char)a1,(char)a2,(char)b1,(char)b2,(char)c1,(char)c2,(char)d1,(char)d2,(char)e1,(char)e2,(char)f1,(char)f2,(char)g1,(char)g2,(char)h1,(char)h2}};
-    return &addr;
+    int i=0;
+    for(i=0; i<8; i++){ // for each 16 bit group
+        
+        //top 2 bytes of group
+        strncpy(buf,&str[0+(5*i)],2); // extract hex chars from str
+        kstrtol(buf,16,&lval); // convert to long
+        if (lval<0){ // if did not convert, set byte to 0
+            lval=0;
+        }
+        target_addr->s6_addr[(2*i)] = (char) lval; // Copy byte to dest struct.
+
+        // repeat for bottom 2 bytes of group
+        strncpy(buf,&str[2+(5*i)],2);
+        kstrtol(buf,16,&lval);
+        if (lval<0){
+            lval=0;
+        }
+        target_addr->s6_addr[(2*i)+1] = (char) lval;
+
+    }    
+
+    return 0;
 }
