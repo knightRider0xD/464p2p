@@ -1,3 +1,6 @@
+#ifndef __464_TABLES
+#define __464_TABLES
+
 #include <linux/ip.h>
 #include <linux/ipv6.h>
 #include <uapi/linux/in.h>
@@ -29,3 +32,5 @@ in6_addr * remote_46_xlat(in_addr *remote_4_addr);
 
 int in4_pton(char *str, in_addr *target_addr);
 int in6_pton(char *str, in6_addr *target_addr);
+
+#endif /* __464_TABLES */

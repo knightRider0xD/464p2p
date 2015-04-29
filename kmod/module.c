@@ -11,6 +11,7 @@
 
 #include "64_inbound.h"
 #include "46_outbound.h"
+#include "464_tables.h"
 
 // Compile with -D 464P2P_VERBOSE for debugging information
 
