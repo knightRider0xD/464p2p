@@ -3,8 +3,8 @@
 
 #include <linux/ip.h>
 #include <linux/ipv6.h>
-#include <uapi/linux/in.h>
-#include <uapi/linux/in6.h>
+#include <linux/in.h>
+#include <linux/in6.h>
 
 struct xlat_entry {
      in6_addr *in6;
