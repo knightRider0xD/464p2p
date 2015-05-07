@@ -23,14 +23,14 @@ int cleanup_tables();
 
 int static_xlat_add();
 int dynamic_xlat_add();
-int local_xlat_add(in6_addr *local_6_addr, in_addr *local_4_addr);
+int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr);
 
-in_addr * local_64_xlat(in6_addr *local_6_addr);
-in6_addr * local_46_xlat(in_addr *local_4_addr);
-in_addr * remote_64_xlat(in6_addr *remote_6_addr);
-in6_addr * remote_46_xlat(in_addr *remote_4_addr);
+struct in_addr * local_64_xlat(struct in6_addr *local_6_addr);
+struct in6_addr * local_46_xlat(struct in_addr *local_4_addr);
+struct in_addr * remote_64_xlat(struct in6_addr *remote_6_addr);
+struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr);
 
-int in4_pton(char *str, in_addr *target_addr);
-int in6_pton(char *str, in6_addr *target_addr);
+int in4_pton(char *str, struct in_addr *target_addr);
+int in6_pton(char *str, struct in6_addr *target_addr);
 
 #endif /* __464_TABLES */
