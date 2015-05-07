@@ -9,11 +9,6 @@
 #include <linux/string.h>
 #include <linux/delay.h>
 
-#include <linux/ip.h>
-#include <linux/ipv6.h>
-#include <linux/in.h>
-#include <linux/in6.h>
-
 #include "64_inbound.h"
 #include "46_outbound.h"
 #include "464_tables.h"

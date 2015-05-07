@@ -8,10 +8,6 @@
 
 #include "46_outbound.h"
 
-#include <linux/ipv6.h>
-#include <linux/in.h>
-#include <linux/in6.h>
-
 struct sk_buff *out_skb;             //inbound packet
 struct iphdr *out_hdr;             //IP header of inbound packet
 struct in_addr *s_464_addr;

@@ -7,14 +7,14 @@
 #include <linux/in6.h>
 
 struct xlat_entry {
-     in6_addr *in6;
-     in_addr *in4;
+     struct in6_addr *in6;
+     struct in_addr *in4;
      struct hlist_node hash_list_data;
 };
 
 struct host_entry {
-     in6_addr *in6;
-     in_addr *in4;
+     struct in6_addr *in6;
+     struct in_addr *in4;
      struct list_head linked_list_data;
 };
 
