@@ -1,10 +1,11 @@
+#include <linux/ip.h>
+#include <linux/ipv6.h>
+
 #ifndef __464_TABLES
 #define __464_TABLES
 
-#include <linux/ip.h>
-#include <linux/ipv6.h>
-#include <uapi/linux/in.h>
-#include <uapi/linux/in6.h>
+//#include <uapi/linux/in.h>
+//#include <uapi/linux/in6.h>
 
 struct xlat_entry {
      in6_addr *in6;
