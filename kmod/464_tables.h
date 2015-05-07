@@ -18,11 +18,11 @@ struct host_entry {
      struct list_head linked_list_data;
 };
 
-int init_tables();
-int cleanup_tables();
+int init_tables(void);
+int cleanup_tables(void);
 
-int static_xlat_add();
-int dynamic_xlat_add();
+int static_xlat_add(void);
+int dynamic_xlat_add(void);
 int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr);
 
 struct in_addr * local_64_xlat(struct in6_addr *local_6_addr);
