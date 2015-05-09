@@ -7,7 +7,8 @@
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv6.h>
 #include <linux/netfilter_ipv4.h>
-#include <linux/hashtable.h>
+#include <uapi/linux/netfilter_ipv6.h>
+#include <uapi/linux/netfilter_ipv4.h>
 #include <linux/string.h>
 #include <linux/delay.h>
 
@@ -66,9 +67,9 @@ int init_module() {
     } while (static_table_status == 0);
     
     in_nfho.hook = on_nf_hook_in;                       //function to call when conditions below met
-    in_nfho.hooknum = NF_IP_LOCAL_IN;            //After IPv6 packet routed and before local delivery
+    in_nfho.hooknum = NF_IP6_LOCAL_IN;            //After IPv6 packet routed and before local delivery
     in_nfho.pf = PF_INET6;                           //IP packets
-    in_nfho.priority = NF_IP_PRI_NAT_SRC;             //set to equal priority as NAT src
+    in_nfho.priority = NF_IP6_PRI_NAT_SRC;             //set to equal priority as NAT src
     nf_register_hook(&in_nfho);                     //register hook
     
     //out_nfho.hook = on_nf_hook_out;                       //function to call when conditions below met
