@@ -1,6 +1,8 @@
-#include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/stat.h>
 
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv6.h>
@@ -23,11 +25,13 @@ static struct nf_hook_ops in_nfho;
 static struct nf_hook_ops out_nfho;
 
 //Module Args
-static char xlatArray[];
-static int xlatArray_count = 0;
-module_param_array(xlatArray, char[], &xlatArray_count, 0000);
-//TODO MODULE_PARM_DESC(xlatArray, "A table of IPv4 to IPv6 address mappings in the format \"IPv4 Address 1\",\"IPv6 Address 1\",\"IPv4 Address 2\",\"IPv6 Address 2\",...");
-MODULE_PARM_DESC(xlatArray, "A table of IPv4 to IPv6 address mappings in the format \"IPv4 Address\",\"IPv6 Address\"");
+static char *v4Addr = "000.000.000.000";
+module_param(v4Addr, charp, 0000);
+MODULE_PARM_DESC(v4Addr, "The IPv4 Address to map");
+
+static char *v6Addr = "0000:0000:0000:0000:0000:0000:0000:0000";
+module_param(v6Addr, charp, 0000);
+MODULE_PARM_DESC(v6Addr, "The IPv6 Address to map");
 
 //On load using 'insmod'
 int init_module() {
@@ -38,17 +42,23 @@ int init_module() {
         return 1;
     }
     
-    if(in4_pton(xlatArray[0],s_464_addr)!=0){
+    struct in4_addr *in4_arg = kcalloc(sizeof in_addr,);
+    if(in4_pton(v4Addr,in4_arg)!=0){
         printk(KERN_INFO "Invalid IPv4 Address\n");
+        kfree(in4_arg);
         return 1;
     }
     
-    if(in6_pton(xlatArray[1],d_464_addr)!=0){
+    struct in6_addr *in6_arg = kcalloc(sizeof in6_addr,);
+    if(in6_pton(v6Addr,in6_arg)!=0){
         printk(KERN_INFO "Invalid IPv6 Address\n");
+        kfree(in4_arg);
+        kfree(in6_arg);
         return 1;
     }
     
     init_tables();
+    local_xlat_add(in4_arg,in6_arg);
     
     // Load initial static entries to table
     int static_table_status = 1;
@@ -80,7 +90,9 @@ void cleanup_module()
     //nf_unregister_hook(&out_nfho);
     
     //Clean XLAT tables
-    cleanup_tables();    
+    cleanup_tables();
     // TODO free memory if needed
+    kfree(in4_arg);
+    kfree(in6_arg);
     
 } 
