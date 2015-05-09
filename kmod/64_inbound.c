@@ -14,6 +14,9 @@ struct ipv6hdr *in6_hdr;            //IPv6 header of inbound packet
 struct iphdr *in4_hdr;              //New IPv4 header for inbound packet
 struct in6_addr *d_464_addr;        //IPv
 
+struct in_addr *d_4_addr;
+struct in_addr *s_4_addr;
+
 int init_64_inbound(){
     // New packet header
     in4_hdr = kzalloc(sizeof(struct iphdr),GFP_KERNEL);
@@ -32,10 +35,10 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     in6_hdr = ipv6_hdr(in_skb);
 
     // XLAT v6 local address
-    struct in_addr *d_4_addr = local_64_xlat(&in6_hdr->daddr);
+    d_4_addr = local_64_xlat(&in6_hdr->daddr);
     
     // If packet dest address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
-    if (memcmp(&in6_hdr->daddr,d_4_addr)){
+    if (memcmp(&in6_hdr->daddr,d_4_addr,sizeof(struct in6_addr))){
 #ifdef 464P2P_VERBOSE
         printk(KERN_INFO "[464P2P] IN; Regular Packet; Passing.\n");
 #endif
@@ -48,7 +51,7 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
 #endif  
     
     // XLAT v6 remote address
-    struct in_addr *s_4_addr = remote_64_xlat(&in6_hdr->saddr);
+    s_4_addr = remote_64_xlat(&in6_hdr->saddr);
     
     if(s_4_addr==NULL){
 #ifdef 464P2P_VERBOSE
@@ -59,8 +62,8 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     // Collate new v4 header values
     in4_hdr->tot_len     = sizeof(struct iphdr)+in6_hdr->payload_len; // total length = header size (40 bytes + v6 payload size)
     in4_hdr->protocol    = in6_hdr->nexthdr;
-    in4_hdr->saddr       = s_4_addr;
-    in4_hdr->daddr       = d_4_addr;
+    memcpy(&in4_hdr->saddr, s_4_addr,sizeof(struct in_addr));
+    memcpy(&in4_hdr->daddr, d_4_addr,sizeof(struct in_addr));
     in4_hdr->ttl         = in6_hdr->hop_limit;
     in4_hdr->tos         = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
     
