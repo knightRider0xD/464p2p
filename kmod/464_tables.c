@@ -34,23 +34,23 @@ struct in6_addr *in6;
 char addr_4[16];
 char addr_6[40];
 
-/* two integer items (files) */
+/* two integer items (files) /
 static ctl_table net_464p2p_table[] = {
-   {CTL_UNNUMBERED, "static_table", &static_table,102400, 0444, NULL, &proc_dostring,NULL, /* fill with 0's */},
-   {CTL_UNNUMBERED, "dynamic_table", &dynamic_table,1024000, 0444, NULL, &proc_dostring,NULL, /* fill with 0's */},
-   {CTL_UNNUMBERED, "static_entry", &static_entry,56, 0644, NULL, &proc_dostring,NULL, /* fill with 0's */},
-   {CTL_UNNUMBERED, "dynamic_entry", &dynamic_entry,56, 0644, NULL, &proc_dostring,NULL, /* fill with 0's */},
+   {CTL_UNNUMBERED, "static_table", &static_table,102400, 0444, NULL, &proc_dostring,NULL, /* fill with 0's *},
+   {CTL_UNNUMBERED, "dynamic_table", &dynamic_table,1024000, 0444, NULL, &proc_dostring,NULL, /* fill with 0's *},
+   {CTL_UNNUMBERED, "static_entry", &static_entry,56, 0644, NULL, &proc_dostring,NULL, /* fill with 0's *},
+   {CTL_UNNUMBERED, "dynamic_entry", &dynamic_entry,56, 0644, NULL, &proc_dostring,NULL, /* fill with 0's *},
    {0}
    };
 
-/* a directory */
+/* a directory *
 static ctl_table net_table[] = {
         {CTL_UNNUMBERED, "464p2p", NULL, 0, 0555,
             net_464p2p_table},
         {0}
     };
 
-/* the parent directory */
+/* the parent directory *
 static ctl_table root_table[] = {
         {CTL_NET, "net", NULL, 0, 0555,
             net_table},
@@ -58,11 +58,12 @@ static ctl_table root_table[] = {
     }; 
 
 static struct ctl_table_header *ctl_table_header;
+*/
 
 int init_tables()
 {
-    ctl_table_header = register_sysctl_table(root_table,0);
-    //return ctl_table_header;
+    /*ctl_table_header = register_sysctl_table(root_table,0);
+    //return ctl_table_header;*/
    
    
     DEFINE_HASHTABLE(xlat_46, 16);
@@ -76,9 +77,9 @@ int init_tables()
 
 int cleanup_tables()
 {
-    if(ctl_table_header!=NULL){
+    /*if(ctl_table_header!=NULL){
         unregister_sysctl_table(ctl_table_header);
-    }
+    }*/
     return 0;
 }
 
@@ -120,6 +121,10 @@ int xlat_add(char xlat_str[]){
  */
 int static_xlat_add(){
     
+    static_entry = "0000:0000:0000:0000:0000:0000:0000:0000 000.000.000.000"
+    xlat_add(static_entry);
+    return 1;
+    /*
     //Check entry if done, next or new
     if (!strncmp(&static_entry,"0",2)){
         //Already done
@@ -136,6 +141,7 @@ int static_xlat_add(){
         strncpy(&static_entry,"0",2);
     }
     return res;
+    */
     
 }
 
@@ -144,8 +150,11 @@ int static_xlat_add(){
  */
 int dynamic_xlat_add(){
     
+    return 0;
+    
     //Not yet implemented
-    return xlat_add(dynamic_entry);
+    //return xlat_add(dynamic_entry);
+    
     
 }
 
