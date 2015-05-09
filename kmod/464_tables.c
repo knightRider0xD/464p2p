@@ -1,6 +1,6 @@
 #include <linux/stddef.h>
 #include <linux/sysctl.h>
-#include <linux/hastable.h>
+#include <linux/hashtable.h>
 #include <linux/linkedlist.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
