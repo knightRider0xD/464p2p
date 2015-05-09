@@ -121,7 +121,7 @@ int xlat_add(char xlat_str[]){
  */
 int static_xlat_add(){
     
-    static_entry = "0000:0000:0000:0000:0000:0000:0000:0000 000.000.000.000"
+    strcpy(static_entry,"0000:0000:0000:0000:0000:0000:0000:0000 000.000.000.000",56);
     xlat_add(static_entry);
     return 1;
     /*
