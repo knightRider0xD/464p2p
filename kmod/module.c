@@ -35,6 +35,7 @@ MODULE_PARM_DESC(v6Addr, "The IPv6 Address to map");
 
 struct in_addr *in4_arg;
 struct in6_addr *in6_arg;
+int static_table_status;
 
 //On load using 'insmod'
 int init_module() {
@@ -58,7 +59,7 @@ int init_module() {
     local_xlat_add(in6_arg,in4_arg);
     
     // Load initial static entries to table
-    int static_table_status = 1;
+    static_table_status = 1;
     do {
         static_table_status = static_xlat_add();
         msleep(10);
@@ -66,7 +67,7 @@ int init_module() {
     
     in_nfho.hook = on_nf_hook_in;                       //function to call when conditions below met
     in_nfho.hooknum = NF_IP6_LOCAL_IN;            //After IPv6 packet routed and before local delivery
-    in_nfho.pf = PF_INET;                           //IP packets
+    in_nfho.pf = PF_INET6;                           //IP packets
     in_nfho.priority = NF_IP6_PRI_NAT_SRC;             //set to equal priority as NAT src
     nf_register_hook(&in_nfho);                     //register hook
     
