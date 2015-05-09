@@ -25,8 +25,8 @@ char dynamic_table[] = "0";
 char static_entry[56] = "0";
 char dynamic_entry[56] = "0";
 
-xlat_entry out_addr_cache;
-xlat_entry in_addr_cache;
+struct xlat_entry out_addr_cache;
+struct xlat_entry in_addr_cache;
 
 struct in_addr *in4;
 struct in6_addr *in6;
