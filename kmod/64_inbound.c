@@ -73,10 +73,10 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     
     // Allocate IPv4 header
     // skb_realloc_headroom(in_skb, 48)
-    ip_hdr(in_skb) = skb_push(in_skb, sizeof(struct iphdr));
+    skb_set_network_header(in_skb,skb_push(in_skb, sizeof(struct iphdr)));
     
     // Write new v4 header data
-    memcpy(&ip_hdr(in_skb),in4_hdr, sizeof(struct iphdr));
+    memcpy(skb_network_header(in_skb),in4_hdr, sizeof(struct iphdr));
     
 #ifdef VERBOSE_464P2P
     printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Moving to IPv4 queue.\n");
