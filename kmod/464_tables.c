@@ -60,15 +60,21 @@ static ctl_table root_table[] = {
 static struct ctl_table_header *ctl_table_header;
 */
 
+DECLARE_HASHTABLE(xlat_46, 16);
+DECLARE_HASHTABLE(xlat_64, 16);
+
 int init_tables()
 {
     /*ctl_table_header = register_sysctl_table(root_table,0);
     //return ctl_table_header;*/
    
    
-    DEFINE_HASHTABLE(xlat_46, 16);
-    DEFINE_HASHTABLE(xlat_64, 16);
+    //DEFINE_HASHTABLE(xlat_46, 16);
+    //DEFINE_HASHTABLE(xlat_64, 16);
 
+    hash_init(xlat_46);
+    hash_init(xlat_64);
+    
     LIST_HEAD(xlat_local);
 
     return 0;
