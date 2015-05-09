@@ -76,7 +76,7 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     ip_hdr(in_skb).raw = skb_push(in_skb, sizeof(struct iphdr));
     
     // Write new v4 header data
-    memcpy(&ip_hdr(skbuffptr).raw,in4_hdr, sizeof(struct iphdr));
+    memcpy(&ip_hdr(in_skb).raw,in4_hdr, sizeof(struct iphdr));
     
 #ifdef VERBOSE_464P2P
     printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Moving to IPv4 queue.\n");
