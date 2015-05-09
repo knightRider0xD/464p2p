@@ -36,20 +36,14 @@ MODULE_PARM_DESC(v6Addr, "The IPv6 Address to map");
 //On load using 'insmod'
 int init_module() {
     
-    // Check for 2 strings in array (temporary limit) if not 2 strings, prevent loading of module
-    if(xlatArray_count != 2){
-        printk(KERN_INFO "Invalid number or Arguments\n");
-        return 1;
-    }
-    
-    struct in_addr *in4_arg = kcalloc(sizeof struct in_addr,);
+    struct in_addr *in4_arg = kzalloc(sizeof struct in_addr,);
     if(in4_pton(v4Addr,in4_arg)!=0){
         printk(KERN_INFO "Invalid IPv4 Address\n");
         kfree(in4_arg);
         return 1;
     }
     
-    struct in6_addr *in6_arg = kcalloc(sizeof struct in6_addr,);
+    struct in6_addr *in6_arg = kzalloc(sizeof struct in6_addr,);
     if(in6_pton(v6Addr,in6_arg)!=0){
         printk(KERN_INFO "Invalid IPv6 Address\n");
         kfree(in4_arg);

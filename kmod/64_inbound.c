@@ -14,7 +14,7 @@ struct iphdr *in4_hdr;              //New IPv4 header for inbound packet
 struct in6_addr *d_464_addr;        //IPv
 
 // New packet header
-in4_hdr = (struct iphdr*) kcalloc(sizeof(struct iphdr));
+in4_hdr = (struct iphdr*) kzalloc(sizeof(struct iphdr));
 in4_hdr->ihl         = 10; //size of IPv6 Header
 in4_hdr->version     = 4;
 //in4_hdr->check       = 0; // Ignore checksum; should have already passed checksum
