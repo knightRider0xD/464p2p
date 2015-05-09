@@ -89,7 +89,7 @@ int xlat_add(char xlat_str[]){
     char addr_6[40];
     strncpy(addr_6,xlat_str,39);
     
-    struct in6_addr *in6 = kcalloc(sizeof in6_addr,);
+    struct in6_addr *in6 = kcalloc(sizeof struct in6_addr,);
     
     if(in6_pton(addr_6,in6)!=0){
         kfree(in6);
@@ -100,7 +100,7 @@ int xlat_add(char xlat_str[]){
     char addr_4[16]
     strncpy(addr_4,xlat_str+40,15);
     
-    struct in_addr *in4 = kcalloc(sizeof in_addr,);
+    struct in_addr *in4 = kcalloc(sizeof struct in_addr,);
     
     if(in4_pton(addr_4,in4)!=0){
         kfree(in6);
