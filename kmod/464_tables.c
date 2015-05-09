@@ -150,7 +150,7 @@ int dynamic_xlat_add(){
 /**
  * Function to add entry to the remote xlat table
  */
-int remote_xlat_add(in6_addr *remote_6_addr, in_addr *remote_4_addr){
+int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_addr){
     
     struct xlat_entry new_entry_46 {
         .in6 = remote_6_addr;
@@ -176,7 +176,7 @@ int remote_xlat_add(in6_addr *remote_6_addr, in_addr *remote_4_addr){
 /**
  * Function to add entry to the local xlat table
  */
-int local_xlat_add(in6_addr *local_6_addr, in_addr *local_4_addr){
+int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr){
     
     struct host_entry new_entry {
         .in6 = local_6_addr;
@@ -199,7 +199,7 @@ int local_xlat_add(in6_addr *local_6_addr, in_addr *local_4_addr){
 /**
  * Function to translate local IPv6 Address to its local IPv4 address
  */
-in_addr * local_64_xlat(in6_addr *local_6_addr){
+struct in_addr * local_64_xlat(struct in6_addr *local_6_addr){
     
     //list lookup
     struct host_entry * current; // Pointer to current position in XLAT list
@@ -218,7 +218,7 @@ in_addr * local_64_xlat(in6_addr *local_6_addr){
 /**
  * Function to translate local IPv6 Address to its local IPv4 address
  */
-in6_addr * local_46_xlat(in_addr *local_4_addr){
+struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
     
     //list lookup
     struct host_entry * current; // Pointer to current position in XLAT list
@@ -237,7 +237,7 @@ in6_addr * local_46_xlat(in_addr *local_4_addr){
 /**
  * Function to translate remote IPv6 Address to a corresponding remote IPv4 address
  */
-in_addr * remote_64_xlat(in6_addr *remote_6_addr){
+struct in_addr * remote_64_xlat(struct in6_addr *remote_6_addr){
     
     //hash lookup
     struct xlat_entry * current; // Pointer to current position in XLAT table
@@ -256,7 +256,7 @@ in_addr * remote_64_xlat(in6_addr *remote_6_addr){
 /**
  * Function to translate remote IPv6 Address to a corresponding remote IPv4 address
  */
-in6_addr * remote_46_xlat(in_addr *remote_4_addr){
+struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
     
     //hash lookup
     struct xlat_entry * current; // Pointer to current position in XLAT table
@@ -285,7 +285,7 @@ in6_addr * remote_46_xlat(in_addr *remote_4_addr){
 /**
  * Function to convert dotted decimal IPv4 address string to in_addr structure
  */
-int in4_pton(char *str, in_addr *target_addr){
+int in4_pton(char *str, struct in_addr *target_addr){
     
     //Test for proper addr len
     if(strlen(str))!=15){
@@ -340,7 +340,7 @@ int in4_pton(char *str, in_addr *target_addr){
 /**
  * Function to convert colon-separated hexadecimal IPv6 address string to in6_addr structure
  */
-int in6_pton(char *str, in6_addr *target_addr){
+int in6_pton(char *str, struct in6_addr *target_addr){
     
     //Test for proper addr len
     if(strlen(str))!=39){
