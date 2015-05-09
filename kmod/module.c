@@ -64,6 +64,8 @@ int init_module() {
         msleep(10);
     } while (static_table_status == 0);
     
+    init_64_inbound();
+    
     in_nfho.hook = on_nf_hook_in;                       //function to call when conditions below met
     in_nfho.hooknum = 1; //NF_IP6_LOCAL_IN;            //After IPv6 packet routed and before local delivery
     in_nfho.pf = PF_INET6;                           //IP packets

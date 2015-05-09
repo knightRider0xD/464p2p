@@ -1,4 +1,5 @@
 #include <linux/netfilter.h>
+#include <linux/netfilter_ipv4.h>
 #include <linux/netfilter_ipv6.h>
 #include <linux/ip.h>
 #include <linux/ipv6.h>
@@ -13,13 +14,16 @@ struct ipv6hdr *in6_hdr;            //IPv6 header of inbound packet
 struct iphdr *in4_hdr;              //New IPv4 header for inbound packet
 struct in6_addr *d_464_addr;        //IPv
 
-// New packet header
-in4_hdr = (struct iphdr*) kzalloc(sizeof(struct iphdr),GFP_KERNEL);
-in4_hdr->ihl         = 10; //size of IPv6 Header
-in4_hdr->version     = 4;
-//in4_hdr->check       = 0; // Ignore checksum; should have already passed checksum
-//in4_hdr->id          = 0; // Ignore packet ID; packet is unfragmented
-//in4_hdr->frag_off    = 0; // Ignore fragmentation offset & flags packet is unfragmented
+int init_64_inbound(){
+    // New packet header
+    in4_hdr = kzalloc(sizeof(struct iphdr),GFP_KERNEL);
+    in4_hdr->ihl         = 10; //size of IPv6 Header
+    in4_hdr->version     = 4;
+    //in4_hdr->check       = 0; // Ignore checksum; should have already passed checksum
+    //in4_hdr->id          = 0; // Ignore packet ID; packet is unfragmented
+    //in4_hdr->frag_off    = 0; // Ignore fragmentation offset & flags packet is unfragmented
+    return 0;
+}
 
 // On NetFilter hook triggered
 unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
