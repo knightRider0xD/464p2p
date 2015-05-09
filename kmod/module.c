@@ -33,17 +33,20 @@ static char *v6Addr = "0000:0000:0000:0000:0000:0000:0000:0000";
 module_param(v6Addr, charp, 0000);
 MODULE_PARM_DESC(v6Addr, "The IPv6 Address to map");
 
+struct in_addr *in4_arg;
+struct in6_addr *in6_arg;
+
 //On load using 'insmod'
 int init_module() {
     
-    struct in_addr *in4_arg = kzalloc(sizeof(struct in_addr), GFP_KERNEL);
+    in4_arg = kzalloc(sizeof(struct in_addr), GFP_KERNEL);
     if(in4_pton(v4Addr,in4_arg)!=0){
         printk(KERN_INFO "Invalid IPv4 Address\n");
         kfree(in4_arg);
         return 1;
     }
     
-    struct in6_addr *in6_arg = kzalloc(sizeof(struct in6_addr), GFP_KERNEL);
+    in6_arg = kzalloc(sizeof(struct in6_addr), GFP_KERNEL);
     if(in6_pton(v6Addr,in6_arg)!=0){
         printk(KERN_INFO "Invalid IPv6 Address\n");
         kfree(in4_arg);
@@ -52,7 +55,7 @@ int init_module() {
     }
     
     init_tables();
-    local_xlat_add(in4_arg,in6_arg);
+    local_xlat_add(in6_arg,in4_arg);
     
     // Load initial static entries to table
     int static_table_status = 1;
