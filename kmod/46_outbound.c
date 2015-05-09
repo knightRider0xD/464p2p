@@ -15,7 +15,7 @@ struct in_addr *s_464_addr;
 // On NetFilter hook triggered
 unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)){
 
-    out_skb = *skb;
+/*    out_skb = *skb;
     out4_hdr = ip_hdr(out_skb);
     
     // XLAT v4 local address
@@ -23,14 +23,14 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     
     // If packet src address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
     if (memcmp(out4_hdr->saddr,s_464_addr)){
-#ifdef 464P2P_VERBOSE
+#ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] OUT; Regular Packet; Passing.\n");
 #endif
         return NF_ACCEPT;
     }
     
     // If packet dest address is a 464p2p address, convert packet, STOLEN and queue for v4 processing.
-#ifdef 464P2P_VERBOSE
+#ifdef VERBOSE_464P2P
     printk(KERN_INFO "[464P2P] OUT; My Packet; Converting 4->6 ...");
 #endif  
     
@@ -38,7 +38,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     struct in_addr *d_6_addr = remote_46_xlat(out4_hdr->daddr);
     
     if(s_4_addr==NULL){
-#ifdef 464P2P_VERBOSE
+#ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] OUT; Remote address not found; Dropping");
 #endif        
     }
@@ -63,12 +63,14 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     // Write new v4 header data
     memcpy(out_skb->nh.raw,out6_hdr, sizeof(struct ipv6hdr));
     
-#ifdef 464P2P_VERBOSE
+#ifdef VERBOSE_464P2P
     printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Moving to IPv6 queue.\n");
 #endif
     
     ip_local_deliver(out_skb);
     
     return NF_STOLEN;
+    */
+    return NF_ACCEPT;
 }
 
