@@ -28,6 +28,11 @@ char dynamic_entry[56] = "0";
 xlat_entry out_addr_cache;
 xlat_entry in_addr_cache;
 
+struct in_addr *in4;
+struct in6_addr *in6;
+
+char addr_4[16];
+char addr_6[40];
 
 /* two integer items (files) */
 static ctl_table net_464p2p_table[] = {
@@ -86,23 +91,21 @@ int cleanup_tables()
  */
 int xlat_add(char xlat_str[]){
     
-    char addr_6[40];
-    strncpy(addr_6,xlat_str,39);
+    strncpy(&addr_6,xlat_str,39);
     
-    struct in6_addr *in6 = kzalloc(sizeof(struct in6_addr),GFP_KERNEL);
+    in6 = kzalloc(sizeof(struct in6_addr),GFP_KERNEL);
     
-    if(in6_pton(addr_6,in6)!=0){
+    if(in6_pton(&addr_6,in6)!=0){
         kfree(in6);
         return -1;
     }
     
     
-    char addr_4[16]
-    strncpy(addr_4,xlat_str+40,15);
+    strncpy(&addr_4,xlat_str+40,15);
     
-    struct in_addr *in4 = kzalloc(sizeof(struct in_addr),GFP_KERNEL);
+    in4 = kzalloc(sizeof(struct in_addr),GFP_KERNEL);
     
-    if(in4_pton(addr_4,in4)!=0){
+    if(in4_pton(&addr_4,in4)!=0){
         kfree(in6);
         kfree(in4);
         return -2;
@@ -118,10 +121,10 @@ int xlat_add(char xlat_str[]){
 int static_xlat_add(){
     
     //Check entry if done, next or new
-    if (!strncmp(static_entry,"0",2)){
+    if (!strncmp(&static_entry,"0",2)){
         //Already done
         return 0;
-    } else if (!strncmp(static_entry,"1",2)){
+    } else if (!strncmp(&static_entry,"1",2)){
         //No more
         return 1;
     }
@@ -130,7 +133,7 @@ int static_xlat_add(){
     int res = xlat_add(static_entry);
     if(res>=0){
         //Processed entry okay? Yes; acknowledge via sysctl for userspace interface to continue.
-        strncpy(static_entry,"0",2);
+        strncpy(&static_entry,"0",2);
     }
     return res;
     
