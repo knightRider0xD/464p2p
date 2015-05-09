@@ -1,7 +1,7 @@
 #include <linux/stddef.h>
 #include <linux/sysctl.h>
 #include <linux/hashtable.h>
-#include <linux/linkedlist.h>
+#include <linux/list.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
 
