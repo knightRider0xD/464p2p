@@ -164,7 +164,7 @@ int dynamic_xlat_add(){
  */
 int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_addr){
     
-    struct xlat_entry new_entry_46 {
+    struct xlat_entry new_entry_46 = {
         .in6 = remote_6_addr;
         .in4 = remote_4_addr;
         .hash_list_data = 0; // initialised when added to hashtable
@@ -172,7 +172,7 @@ int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_add
     
     hash_add(xlat_46, &new_entry_46.next, new_entry_46.in4);
     
-    struct xlat_entry new_entry_64 {
+    struct xlat_entry new_entry_64 = {
         .in6 = remote_6_addr;
         .in4 = remote_4_addr;
         .hash_list_data = 0; // initialised when added to hashtable
@@ -190,7 +190,7 @@ int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_add
  */
 int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr){
     
-    struct host_entry new_entry {
+    struct host_entry new_entry = {
         .in6 = local_6_addr;
         .in4 = local_4_addr;
         .linked_list_data = 0; // initialised when added to linked list
