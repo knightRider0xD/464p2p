@@ -34,6 +34,11 @@ struct in6_addr *in6;
 char addr_4[16];
 char addr_6[40];
 
+// setup pton buffers
+char buf[4];
+long lval;
+uint32_t wrk;
+
 
 /* two integer items (files) */
 //static ctl_table net_464p2p_table[] = {
@@ -358,9 +363,8 @@ int in4_pton(char *str, struct in_addr *target_addr){
     }
     
     // setup buffers
-    char buf[4];
-    long lval = 0;
-    uint32_t wrk = 0;
+    lval = 0;
+    wrk = 0;
     
     // convert octet a
     strncpy(buf,&str[0],3); //extract octet chars from string
@@ -413,9 +417,8 @@ int in6_pton(char *str, struct in6_addr *target_addr){
     }
 
     // setup buffers
-    char buf[3];
-    long lval = 0;
-    uint32_t wrk = 0;
+    lval = 0;
+    wrk = 0;
 
     
     int i=0;
