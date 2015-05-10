@@ -195,7 +195,7 @@ int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_add
         .linked_list_data = LIST_HEAD_INIT(new_entry.linked_list_data)
     };
     
-    list_add(&new_entry,&xlat_remote);
+    list_add(&new_entry.linked_list_data,&xlat_remote);
     
 }
 
@@ -211,7 +211,7 @@ int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr){
         .linked_list_data = LIST_HEAD_INIT(new_entry.linked_list_data)
     };
     
-    list_add(&new_entry,&xlat_local);
+    list_add(&new_entry.linked_list_data,&xlat_local);
     
     return 0;
     
