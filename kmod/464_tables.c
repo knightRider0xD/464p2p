@@ -226,13 +226,13 @@ int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr){
 struct in_addr * local_64_xlat(struct in6_addr *local_6_addr){
     
     //list lookup
-    struct host_entry *current; // Pointer to current position in XLAT list
-    list_for_each(current, xlat_local){
+    struct host_entry *current_host; // Pointer to current position in XLAT list
+    list_for_each(current_host, xlat_local){
         
         // If match return pointer to corresponding IPv4 address
-        if(!memcmp(current->in6,local_6_addr,sizeof(struct in6_addr))){
+        if(!memcmp(current_host->in6,local_6_addr,sizeof(struct in6_addr))){
             //TODO Move to head
-            return current->in4;
+            return current_host->in4;
         }
     }
     
@@ -245,13 +245,13 @@ struct in_addr * local_64_xlat(struct in6_addr *local_6_addr){
 struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
     
     //list lookup
-    struct host_entry * current; // Pointer to current position in XLAT list
-    list_for_each(current, xlat_local){
+    struct host_entry * current_host; // Pointer to current position in XLAT list
+    list_for_each(current_host, xlat_local){
         
         // If match return pointer to corresponding IPv4 address
-        if(!memcmp(current->in4,local_4_addr,sizeof(struct in_addr))){
+        if(!memcmp(current_host->in4,local_4_addr,sizeof(struct in_addr))){
             //TODO Move to head
-            return current->in6;
+            return current_host->in6;
         }
     }
     
@@ -264,13 +264,13 @@ struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
 struct in_addr * remote_64_xlat(struct in6_addr *remote_6_addr){
     
     //hash lookup
-    struct xlat_entry *current; // Pointer to current position in XLAT table
-    hash_for_each_possible(xlat_64, current, hash_list_data, *remote_6_addr){
+    struct xlat_entry *current_host; // Pointer to current position in XLAT table
+    hash_for_each_possible(xlat_64, current_host, hash_list_data, *remote_6_addr){
         
         // If match return pointer to corresponding IPv4 address
-        if(!memcmp(current->in6,remote_6_addr,sizeof(struct in6_addr))){
+        if(!memcmp(current_host->in6,remote_6_addr,sizeof(struct in6_addr))){
             //TODO Move to head
-            return current->in4;
+            return current_host->in4;
         }
     }
     
@@ -283,13 +283,13 @@ struct in_addr * remote_64_xlat(struct in6_addr *remote_6_addr){
 struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
     
     //hash lookup
-    struct xlat_entry * current; // Pointer to current position in XLAT table
-    hash_for_each_possible(xlat_46, current, hash_list_data, *remote_4_addr){
+    struct xlat_entry * current_host; // Pointer to current position in XLAT table
+    hash_for_each_possible(xlat_46, current_host, hash_list_data, *remote_4_addr){
         
         // If match return pointer to corresponding IPv4 address
-        if(!memcmp(current->in4,remote_4_addr,sizeof(struct in_addr))){
+        if(!memcmp(current_host->in4,remote_4_addr,sizeof(struct in_addr))){
             //TODO Move to head
-            return current->in6;
+            return current_host->in6;
         }
     }
     
