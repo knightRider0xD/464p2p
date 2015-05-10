@@ -65,8 +65,10 @@ static ctl_table root_table[] = {
 static struct ctl_table_header *ctl_table_header;
 */
 
-DECLARE_HASHTABLE(xlat_46, 16);
-DECLARE_HASHTABLE(xlat_64, 16);
+//DECLARE_HASHTABLE(xlat_46, 16);
+//DECLARE_HASHTABLE(xlat_64, 16);
+LIST_HEAD(xlat_local);
+LIST_HEAD(xlat_remote);
 
 int init_tables()
 {
@@ -77,10 +79,9 @@ int init_tables()
     //DEFINE_HASHTABLE(xlat_46, 16);
     //DEFINE_HASHTABLE(xlat_64, 16);
 
-    hash_init(xlat_46);
-    hash_init(xlat_64);
+    //hash_init(xlat_46);
+    //hash_init(xlat_64);
     
-    LIST_HEAD(xlat_local);
 
     return 0;
     
@@ -176,7 +177,7 @@ int dynamic_xlat_add(){
  */
 int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_addr){
     
-    struct xlat_entry new_entry_46 = {
+    /*struct xlat_entry new_entry_46 = {
         .in6 = remote_6_addr,
         .in4 = remote_4_addr,
         .hash_list_data = 0 // initialised when added to hashtable
@@ -191,8 +192,15 @@ int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_add
     };
     
     hash_add(xlat_64, &new_entry_64.hash_list_data, *new_entry_64.in6);
+    */
     
-    return 0;
+    struct host_entry new_entry = {
+        .in6 = remote_6_addr,
+        .in4 = remote_4_addr,
+        .linked_list_data = LIST_HEAD_INIT(new_entry.linked_list_data)
+    };
+    
+    list_add(&new_entry,&xlat_remote);
     
 }
 
@@ -205,10 +213,10 @@ int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr){
     struct host_entry new_entry = {
         .in6 = local_6_addr,
         .in4 = local_4_addr,
-        .linked_list_data = 0 // initialised when added to linked list
+        .linked_list_data = LIST_HEAD_INIT(new_entry.linked_list_data)
     };
     
-    list_add(&new_entry,xlat_local);
+    list_add(&new_entry,&xlat_local);
     
     return 0;
     
@@ -261,7 +269,7 @@ struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
 /**
  * Function to translate remote IPv6 Address to a corresponding remote IPv4 address
  */
-struct in_addr * remote_64_xlat(struct in6_addr *remote_6_addr){
+/*struct in_addr * remote_64_xlat(struct in6_addr *remote_6_addr){
     
     //hash lookup
     struct xlat_entry *current_host; // Pointer to current position in XLAT table
@@ -275,12 +283,12 @@ struct in_addr * remote_64_xlat(struct in6_addr *remote_6_addr){
     }
     
     return NULL;  //No match found
-}
+}*/
 
 /**
  * Function to translate remote IPv6 Address to a corresponding remote IPv4 address
  */
-struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
+/*struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
     
     //hash lookup
     struct xlat_entry * current_host; // Pointer to current position in XLAT table
@@ -298,6 +306,44 @@ struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
     //struct in_addr *remote_4_addr;
     //in4_pton("192.168.5.1",remote_4_addr);
     //return remote_4_addr;
+}*/
+
+/**
+ * Function to translate remote IPv6 Address to its remote IPv4 address
+ */
+struct in_addr * remote_64_xlat(struct in6_addr *remote_6_addr){
+    
+    //list lookup
+    struct host_entry *current_host; // Pointer to current position in XLAT list
+    list_for_each(current_host, xlat_remote){
+        
+        // If match return pointer to corresponding IPv4 address
+        if(!memcmp(current_host->in6,local_6_addr,sizeof(struct in6_addr))){
+            //TODO Move to head
+            return current_host->in4;
+        }
+    }
+    
+    return NULL;  //No match found
+}
+
+/**
+ * Function to translate remote IPv4 Address to its remote IPv6 address
+ */
+struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
+    
+    //list lookup
+    struct host_entry * current_host; // Pointer to current position in XLAT list
+    list_for_each(current_host, xlat_remote){
+        
+        // If match return pointer to corresponding IPv4 address
+        if(!memcmp(current_host->in4,local_4_addr,sizeof(struct in_addr))){
+            //TODO Move to head
+            return current_host->in6;
+        }
+    }
+    
+    return NULL;  //No match found
 }
 
 
