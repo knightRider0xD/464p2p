@@ -313,7 +313,7 @@ struct in_addr * remote_64_xlat(struct in6_addr *remote_6_addr){
     list_for_each_entry(current_host, &xlat_remote, linked_list_data){
         
         // If match return pointer to corresponding IPv4 address
-        if(!memcmp(current_host->in6,local_6_addr,sizeof(struct in6_addr))){
+        if(!memcmp(current_host->in6,remote_6_addr,sizeof(struct in6_addr))){
             //TODO Move to head
             return current_host->in4;
         }
@@ -332,7 +332,7 @@ struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
     list_for_each_entry(current_host, &xlat_remote, linked_list_data){
         
         // If match return pointer to corresponding IPv4 address
-        if(!memcmp(current_host->in4,local_4_addr,sizeof(struct in_addr))){
+        if(!memcmp(current_host->in4,remote_4_addr,sizeof(struct in_addr))){
             //TODO Move to head
             return current_host->in6;
         }
