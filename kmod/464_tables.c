@@ -225,7 +225,7 @@ struct in_addr * local_64_xlat(struct in6_addr *local_6_addr){
     list_for_each(current, xlat_local){
         
         // If match return pointer to corresponding IPv4 address
-        if(!memcmp(current->in6,local_6_addr)){
+        if(!memcmp(current->in6,local_6_addr,sizeof(struct in6_addr))){
             //TODO Move to head
             return current->in4;
         }
@@ -244,7 +244,7 @@ struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
     list_for_each(current, xlat_local){
         
         // If match return pointer to corresponding IPv4 address
-        if(!memcmp(current->in4,local_4_addr)){
+        if(!memcmp(current->in4,local_4_addr,sizeof(struct in_addr))){
             //TODO Move to head
             return current->in6;
         }
@@ -263,7 +263,7 @@ struct in_addr * remote_64_xlat(struct in6_addr *remote_6_addr){
     hash_for_each_possible(xlat_64, current, hash_list_data, *remote_6_addr){
         
         // If match return pointer to corresponding IPv4 address
-        if(!memcmp(current->in6,remote_6_addr)){
+        if(!memcmp(current->in6,remote_6_addr,sizeof(struct in6_addr))){
             //TODO Move to head
             return current->in4;
         }
@@ -282,7 +282,7 @@ struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
     hash_for_each_possible(xlat_46, current, hash_list_data, *remote_4_addr){
         
         // If match return pointer to corresponding IPv4 address
-        if(!memcmp(current->in4,remote_4_addr)){
+        if(!memcmp(current->in4,remote_4_addr,sizeof(struct in_addr))){
             //TODO Move to head
             return current->in6;
         }
@@ -362,7 +362,7 @@ int in4_pton(char *str, struct in_addr *target_addr){
 int in6_pton(char *str, struct in6_addr *target_addr){
     
     //Test for proper addr len
-    if(strlen(str))!=39){
+    if(strlen(str)!=39){
         return 1;  //Unable to convert
     }
     
