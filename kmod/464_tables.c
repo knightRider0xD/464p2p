@@ -34,36 +34,31 @@ struct in6_addr *in6;
 char addr_4[16];
 char addr_6[40];
 
-// setup pton buffers
-char buf[4];
-long lval = 0;
-uint32_t wrk = 0;
 
-/* two integer items (files) /
-static ctl_table net_464p2p_table[] = {
-   {CTL_UNNUMBERED, "static_table", &static_table,102400, 0444, NULL, &proc_dostring,NULL, /* fill with 0's *},
-   {CTL_UNNUMBERED, "dynamic_table", &dynamic_table,1024000, 0444, NULL, &proc_dostring,NULL, /* fill with 0's *},
-   {CTL_UNNUMBERED, "static_entry", &static_entry,56, 0644, NULL, &proc_dostring,NULL, /* fill with 0's *},
-   {CTL_UNNUMBERED, "dynamic_entry", &dynamic_entry,56, 0644, NULL, &proc_dostring,NULL, /* fill with 0's *},
-   {0}
-   };
+/* two integer items (files) */
+//static ctl_table net_464p2p_table[] = {
+//   {CTL_UNNUMBERED, "static_table", &static_table,102400, 0444, NULL, &proc_dostring,NULL, /* fill with 0's */},
+//   {CTL_UNNUMBERED, "dynamic_table", &dynamic_table,1024000, 0444, NULL, &proc_dostring,NULL, /* fill with 0's */},
+//   {CTL_UNNUMBERED, "static_entry", &static_entry,56, 0644, NULL, &proc_dostring,NULL, /* fill with 0's */},
+//   {CTL_UNNUMBERED, "dynamic_entry", &dynamic_entry,56, 0644, NULL, &proc_dostring,NULL, /* fill with 0's */},
+//   {0}
+//   };
 
-/* a directory *
-static ctl_table net_table[] = {
-        {CTL_UNNUMBERED, "464p2p", NULL, 0, 0555,
-            net_464p2p_table},
-        {0}
-    };
+/* a directory */
+//static ctl_table net_table[] = {
+//        {CTL_UNNUMBERED, "464p2p", NULL, 0, 0555,
+//            net_464p2p_table},
+//        {0}
+//    };
 
-/* the parent directory *
-static ctl_table root_table[] = {
-        {CTL_NET, "net", NULL, 0, 0555,
-            net_table},
-        {0}
-    }; 
+/* the parent directory */
+//static ctl_table root_table[] = {
+//        {CTL_NET, "net", NULL, 0, 0555,
+//            net_table},
+//        {0}
+//    }; 
 
-static struct ctl_table_header *ctl_table_header;
-*/
+//static struct ctl_table_header *ctl_table_header;
 
 //DECLARE_HASHTABLE(xlat_46, 16);
 //DECLARE_HASHTABLE(xlat_64, 16);
@@ -362,6 +357,11 @@ int in4_pton(char *str, struct in_addr *target_addr){
         return 1;  //Unable to convert
     }
     
+    // setup buffers
+    char buf[4];
+    long lval = 0;
+    uint32_t wrk = 0;
+    
     // convert octet a
     strncpy(buf,&str[0],3); //extract octet chars from string
     kstrtol(buf,10,&lval); // convert to long
@@ -411,6 +411,12 @@ int in6_pton(char *str, struct in6_addr *target_addr){
     if(strlen(str)!=39){
         return 1;  //Unable to convert
     }
+
+    // setup buffers
+    char buf[3];
+    long lval = 0;
+    uint32_t wrk = 0;
+
     
     int i=0;
     for(i=0; i<8; i++){ // for each 16 bit group
