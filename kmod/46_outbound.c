@@ -3,8 +3,11 @@
 #include <linux/module.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
+#include <linux/netfilter_ipv6.h>
 #include <linux/ip.h>
 #include <linux/skbuff.h> 
+
+#include <net/ipv6.h>
 
 #include "46_outbound.h"
 
@@ -67,7 +70,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Moving to IPv6 queue.\n");
 #endif
     
-    ip_local_deliver(out_skb);
+    ip6_input(out_skb);
     
     return NF_STOLEN;
     */

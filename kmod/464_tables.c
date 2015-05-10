@@ -1,6 +1,7 @@
 #include <linux/stddef.h>
 #include <linux/sysctl.h>
-#include <linux/hashtable.h>
+//#include <linux/hashtable.h>
+//#include <linux/crc32.h>
 #include <linux/list.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
@@ -20,8 +21,8 @@
  * Init functions for XLAT table
  ********************************/
 
-char static_table[] = "0";
-char dynamic_table[] = "0";
+//char static_table[] = "0";
+//char dynamic_table[] = "0";
 char static_entry[56] = "0";
 char dynamic_entry[56] = "0";
 
@@ -38,6 +39,7 @@ char addr_6[40];
 char buf[4];
 long lval;
 uint32_t wrk;
+int pton_i;
 
 
 /* two integer items (files) */
@@ -75,9 +77,6 @@ int init_tables()
     /*ctl_table_header = register_sysctl_table(root_table,0);
     //return ctl_table_header;*/
    
-   
-    //DEFINE_HASHTABLE(xlat_46, 16);
-    //DEFINE_HASHTABLE(xlat_64, 16);
 
     //hash_init(xlat_46);
     //hash_init(xlat_64);
@@ -183,7 +182,8 @@ int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_add
         .hash_list_data = 0 // initialised when added to hashtable
     };
     
-    hash_add(xlat_46, &new_entry_46.hash_list_data, *new_entry_46.in4);
+    //hash_add(xlat_46, &new_entry_46.hash_list_data, *new_entry_46.in4);
+    hash_add(xlat_46, &new_entry_46.hash_list_data, crc32(0, new_entry_46.in4, 16));
     
     struct xlat_entry new_entry_64 = {
         .in6 = remote_6_addr,
@@ -201,6 +201,8 @@ int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_add
     };
     
     list_add(&new_entry.linked_list_data,&xlat_remote);
+    
+    return 0;
     
 }
 
@@ -420,25 +422,23 @@ int in6_pton(char *str, struct in6_addr *target_addr){
     lval = 0;
     wrk = 0;
 
-    
-    int i=0;
-    for(i=0; i<8; i++){ // for each 16 bit group
+    for(pton_i=0; pton_i<8; pton_i++){ // for each 16 bit group
         
         //top 2 bytes of group
-        strncpy(buf,&str[0+(5*i)],2); // extract hex chars from str
+        strncpy(buf,&str[0+(5*pton_i)],2); // extract hex chars from str
         kstrtol(buf,16,&lval); // convert to long
         if (lval<0){ // if did not convert, set byte to 0
             lval=0;
         }
-        target_addr->s6_addr[(2*i)] = (char) lval; // Copy byte to dest struct.
+        target_addr->s6_addr[(2*pton_i)] = (char) lval; // Copy byte to dest struct.
 
         // repeat for bottom 2 bytes of group
-        strncpy(buf,&str[2+(5*i)],2);
+        strncpy(buf,&str[2+(5*pton_i)],2);
         kstrtol(buf,16,&lval);
         if (lval<0){
             lval=0;
         }
-        target_addr->s6_addr[(2*i)+1] = (char) lval;
+        target_addr->s6_addr[(2*pton_i)+1] = (char) lval;
 
     }    
 
