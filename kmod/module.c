@@ -23,6 +23,9 @@ MODULE_AUTHOR("Ian Knight");
 static struct nf_hook_ops in_nfho;
 static struct nf_hook_ops out_nfho;
 
+static struct nf_hook_ops in_nfhx;
+static struct nf_hook_ops out_nfhx;
+
 //Module Args
 static char *v4Addr = "000.000.000.000";
 module_param(v4Addr, charp, 0000);
@@ -64,13 +67,19 @@ int init_module() {
         msleep(10);
     } while (static_table_status == 0);
     
-    init_64_inbound();
+    init_64_inbound(in_nfhx);
     
     in_nfho.hook = on_nf_hook_in;                       //function to call when conditions below met
     in_nfho.hooknum = 1; //NF_IP6_LOCAL_IN;            //After IPv6 packet routed and before local delivery
     in_nfho.pf = PF_INET6;                           //IP packets
     in_nfho.priority = 100;//NF_IP6_PRI_NAT_SRC;             //set to equal priority as NAT src
     nf_register_hook(&in_nfho);                     //register hook
+    
+    in_nfhx.hook = on_nf_hook_in;                       //function to call when conditions below met
+    in_nfhx.hooknum = 1; //NF_IP_LOCAL_IN;            //After IPv6 packet routed and before local delivery
+    in_nfhx.pf = PF_INET;                           //IP packets
+    in_nfhx.priority = 100;//NF_IP_PRI_NAT_SRC;             //set to equal priority as NAT src
+    nf_register_hook(&in_nfhx);                     //register hook
     
     //out_nfho.hook = on_nf_hook_out;                       //function to call when conditions below met
     //out_nfho.hooknum = NF_IP_LOCAL_IN;            //After IPv4 packet Created and before routing

@@ -17,7 +17,9 @@ struct in6_addr *d_464_addr;        //IPv
 struct in_addr *d_4_addr;
 struct in_addr *s_4_addr;
 
-int init_64_inbound(){
+struct nf_hook_ops *reinject_nfho;
+
+int init_64_inbound(struct nf_hook_ops *nfho){
     // New packet header
     in4_hdr = kzalloc(sizeof(struct iphdr),GFP_KERNEL);
     in4_hdr->ihl         = 10; //size of IPv6 Header
@@ -82,7 +84,18 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Moving to IPv4 queue.\n");
 #endif
     
+    struct nf_info *reinject_info = kzalloc(sizeof(struct nf_info));
+    reinject_info->elem = reinject_nfho;
+    reinject_info->pf = PF_INET;
+    reinject_info->hook = reinject_nfho;
+    reinject_info->indev;
+    reinject_info->outdev;
+    reinject_info->okfn;
+    
     ip_local_deliver(in_skb);
     
     return NF_STOLEN;
 }
+
+// Accept all packets for x hook
+unsigned int x_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {return NF_ACCEPT;}
