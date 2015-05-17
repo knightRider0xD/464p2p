@@ -42,7 +42,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     out4_hdr = ip_hdr(out_skb);
     
     // XLAT v4 local address
-    s_6_addr = local_46_xlat(&((in_addr){out4_hdr->saddr}));
+    s_6_addr = local_46_xlat(&((struct in_addr)out4_hdr->saddr));
     
     // If packet src address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
     if (s_6_addr == NULL){
@@ -58,7 +58,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
 #endif  
     
     // XLAT v4 remote address
-    d_6_addr = remote_46_xlat(&((in_addr){out4_hdr->daddr}));
+    d_6_addr = remote_46_xlat(&((struct in_addr)out4_hdr->daddr));
     
     if(d_6_addr==NULL){
 #ifdef VERBOSE_464P2P
