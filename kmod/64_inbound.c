@@ -91,7 +91,7 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Moving to IPv4 queue.\n");
 #endif
     
-    struct nf_queue_entry *reinject_4_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
+    reinject_4_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
     reinject_4_qent->skb = in_skb;
     reinject_4_qent->elem = reinject_4_nfho;
     reinject_4_qent->pf = PF_INET;
