@@ -82,7 +82,8 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     
     // Allocate IPv4 header
     // skb_realloc_headroom(in_skb, 48)
-    skb_set_network_header(in_skb,skb_push(in_skb, sizeof(struct iphdr)));
+    skb_push(in_skb, sizeof(struct iphdr))
+    skb_set_network_header(in_skb,0);
     
     // Write new v4 header data
     memcpy(skb_network_header(in_skb),in4_hdr, sizeof(struct iphdr));
