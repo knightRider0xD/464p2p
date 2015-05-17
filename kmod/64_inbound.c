@@ -96,8 +96,8 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     reinject_qent->elem = reinject_nfho;
     reinject_qent->pf = PF_INET;
     reinject_qent->hook = hooknum; //NF_IP_LOCAL_IN
-    reinject_qent->indev = in;
-    reinject_qent->outdev out;
+    reinject_qent->indev = &(*in);
+    reinject_qent->outdev = &(*out);
     reinject_qent->okfn = okfn;
     reinject_qent->size = sizeof(struct nf_queue_entry);
     

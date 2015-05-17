@@ -22,6 +22,8 @@ struct in_addr *d_6_addr;
 struct nf_hook_ops *reinject_nfho;
 struct nf_queue_entry *reinject_qent;
 
+struct nf_queue_entry *reinject_qent;
+
 int init_46_outbound(struct nf_hook_ops *nfho){
     // New packet header
     out6_hdr = kzalloc(sizeof(struct iphdr),GFP_KERNEL);
@@ -89,13 +91,13 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Moving to IPv6 queue.\n");
 #endif
     
-    struct nf_queue_entry *reinject_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
+    reinject_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
     reinject_qent->skb = out_skb;
     reinject_qent->elem = reinject_nfho;
     reinject_qent->pf = PF_INET6;
     reinject_qent->hook = hooknum; //NF_IP_LOCAL_IN
-    reinject_qent->indev = in;
-    reinject_qent->outdev out;
+    reinject_qent->indev = &(*in);
+    reinject_qent->outdev = &(*out);
     reinject_qent->okfn = okfn;
     reinject_qent->size = sizeof(struct nf_queue_entry);
     
