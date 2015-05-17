@@ -17,8 +17,8 @@ struct sk_buff *out_skb;             //inbound packet
 struct iphdr *out4_hdr;             //IP header of inbound packet
 struct ipv6hdr *out6_hdr;             //IP header of inbound packet;
 
-struct in_addr *s_6_addr;
-struct in_addr *d_6_addr;
+struct in6_addr *s_6_addr;
+struct in6_addr *d_6_addr;
 
 struct nf_hook_ops *reinject_nfho;
 struct nf_queue_entry *reinject_qent;
@@ -70,8 +70,8 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     // Collate new v6 header values
     out6_hdr->payload_len     = out4_hdr->tot_len-sizeof(struct iphdr); // payload length = total length - header size
     out6_hdr->nexthdr         = out4_hdr->protocol;
-    out6_hdr->saddr           = s_6_addr;
-    out6_hdr->daddr           = d_6_addr;
+    memcpy(&out6_hdr->saddr, s_6_addr,sizeof(struct in6_addr));
+    memcpy(&out6_hdr->daddr, d_6_addr,sizeof(struct in6_addr));
     out6_hdr->hop_limit        = out4_hdr->ttl;
     out6_hdr->priority = (out4_hdr->tos>>4);
     out6_hdr->flow_lbl[0] = ((out4_hdr->tos&15)<<4);// + current flow label value (does not exist)
