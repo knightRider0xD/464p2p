@@ -20,11 +20,11 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Ian Knight");
 
 //netfilter hook options
-static struct nf_hook_ops in_nfho;
-static struct nf_hook_ops out_nfho;
+static struct nf_hook_ops *in_nfho;
+static struct nf_hook_ops *out_nfho;
 
-static struct nf_hook_ops in_nfhx;
-static struct nf_hook_ops out_nfhx;
+static struct nf_hook_ops *in_nfhx;
+static struct nf_hook_ops *out_nfhx;
 
 //Module Args
 static char *v4Addr = "000.000.000.000";
