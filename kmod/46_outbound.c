@@ -8,6 +8,7 @@
 #include <linux/skbuff.h> 
 
 #include <net/ipv6.h>
+#include <net/netfilter/nf_queue.h>
 
 #include "46_outbound.h"
 

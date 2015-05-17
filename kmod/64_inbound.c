@@ -5,7 +5,10 @@
 #include <linux/ipv6.h>
 #include <linux/skbuff.h>
 #include <linux/string.h>
+
 #include <net/ip.h>
+#include <net/netfilter/nf_queue.h>
+
 #include "64_inbound.h"
 #include "464_tables.h"
 
