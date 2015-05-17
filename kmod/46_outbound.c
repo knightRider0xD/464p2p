@@ -20,17 +20,17 @@ struct ipv6hdr *out6_hdr;             //IP header of inbound packet;
 struct in6_addr *s_6_addr;
 struct in6_addr *d_6_addr;
 
-struct nf_hook_ops *reinject_nfho;
-struct nf_queue_entry *reinject_qent;
+struct nf_hook_ops *reinject_6_nfho;
+struct nf_queue_entry *reinject_6_qent;
 
-struct nf_queue_entry *reinject_qent;
+struct nf_queue_entry *reinject_6_qent;
 
 int init_46_outbound(struct nf_hook_ops *nfho){
     // New packet header
     out6_hdr = kzalloc(sizeof(struct iphdr),GFP_KERNEL);
     out6_hdr->version     = 6;
     
-    reinject_nfho = nfho;
+    reinject_6_nfho = nfho;
     
     return 0;
 }
@@ -92,17 +92,17 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Moving to IPv6 queue.\n");
 #endif
     
-    reinject_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
-    reinject_qent->skb = out_skb;
-    reinject_qent->elem = reinject_nfho;
-    reinject_qent->pf = PF_INET6;
-    reinject_qent->hook = hooknum; //NF_IP_LOCAL_IN
-    reinject_qent->indev = *(&in);
-    reinject_qent->outdev = *(&out);
-    reinject_qent->okfn = okfn;
-    reinject_qent->size = sizeof(struct nf_queue_entry);
+    reinject_6_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
+    reinject_6_qent->skb = out_skb;
+    reinject_6_qent->elem = reinject_6_nfho;
+    reinject_6_qent->pf = PF_INET6;
+    reinject_6_qent->hook = hooknum; //NF_IP_LOCAL_IN
+    reinject_6_qent->indev = *(&in);
+    reinject_6_qent->outdev = *(&out);
+    reinject_6_qent->okfn = okfn;
+    reinject_6_qent->size = sizeof(struct nf_queue_entry);
     
-    nf_reinject(reinject_qent,NF_ACCEPT);
+    nf_reinject(reinject_6_qent,NF_ACCEPT);
 
 #ifdef VERBOSE_464P2P
     printk(KERN_INFO "[464P2P] OUT; 6 Packet Reinjected, 4 Packet Stolen.\n");

@@ -19,8 +19,8 @@ struct iphdr *in4_hdr;              //New IPv4 header for inbound packet
 struct in_addr *d_4_addr;
 struct in_addr *s_4_addr;
 
-struct nf_hook_ops *reinject_nfho;
-struct nf_queue_entry *reinject_qent;
+struct nf_hook_ops *reinject_4_nfho;
+struct nf_queue_entry *reinject_4_qent;
 
 int init_64_inbound(struct nf_hook_ops *nfho){
     // New packet header
@@ -31,7 +31,7 @@ int init_64_inbound(struct nf_hook_ops *nfho){
     //in4_hdr->id          = 0; // Ignore packet ID; packet is unfragmented
     //in4_hdr->frag_off    = 0; // Ignore fragmentation offset & flags packet is unfragmented
     
-    reinject_nfho = nfho;
+    reinject_4_nfho = nfho;
     
     return 0;
 }
@@ -91,17 +91,17 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Moving to IPv4 queue.\n");
 #endif
     
-    struct nf_queue_entry *reinject_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
-    reinject_qent->skb = in_skb;
-    reinject_qent->elem = reinject_nfho;
-    reinject_qent->pf = PF_INET;
-    reinject_qent->hook = hooknum; //NF_IP_LOCAL_IN
-    reinject_qent->indev = *(&in);
-    reinject_qent->outdev = *(&out);
-    reinject_qent->okfn = okfn;
-    reinject_qent->size = sizeof(struct nf_queue_entry);
+    struct nf_queue_entry *reinject_4_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
+    reinject_4_qent->skb = in_skb;
+    reinject_4_qent->elem = reinject_4_nfho;
+    reinject_4_qent->pf = PF_INET;
+    reinject_4_qent->hook = hooknum; //NF_IP_LOCAL_IN
+    reinject_4_qent->indev = *(&in);
+    reinject_4_qent->outdev = *(&out);
+    reinject_4_qent->okfn = okfn;
+    reinject_4_qent->size = sizeof(struct nf_queue_entry);
     
-    nf_reinject(reinject_qent,NF_ACCEPT);
+    nf_reinject(reinject_4_qent,NF_ACCEPT);
 
 #ifdef VERBOSE_464P2P
     printk(KERN_INFO "[464P2P] IN; 4 Packet Reinjected, 6 Packet Stolen.\n");
