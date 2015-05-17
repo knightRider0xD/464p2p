@@ -20,11 +20,11 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Ian Knight");
 
 //netfilter hook options
-static struct nf_hook_ops *in_nfho;
-static struct nf_hook_ops *out_nfho;
+static struct nf_hook_ops in_nfho;
+static struct nf_hook_ops out_nfho;
 
-static struct nf_hook_ops *in_nfhx;
-static struct nf_hook_ops *out_nfhx;
+static struct nf_hook_ops in_nfhx;
+static struct nf_hook_ops out_nfhx;
 
 //Module Args
 static char *v4Addr = "000.000.000.000";
@@ -67,7 +67,7 @@ int init_module() {
         msleep(10);
     } while (static_table_status == 0);
     
-    init_64_inbound(in_nfhx);
+    init_64_inbound(&in_nfhx);
     
     in_nfho.hook = on_nf_hook_in;                       //function to call when conditions below met
     in_nfho.hooknum = 1; //NF_IP6_LOCAL_IN;            //After IPv6 packet routed and before local delivery
@@ -81,7 +81,7 @@ int init_module() {
     in_nfhx.priority = 100;//NF_IP_PRI_NAT_SRC;             //set to equal priority as NAT src
     nf_register_hook(&in_nfhx);                     //register hook
     
-    init_46_outbound(out_nfhx);
+    init_46_outbound(&out_nfhx);
     
     out_nfho.hook = on_nf_hook_out;                       //function to call when conditions below met
     out_nfho.hooknum = 1; //NF_IP_LOCAL_IN;            //After IPv4 packet Created and before routing
