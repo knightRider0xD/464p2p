@@ -11,6 +11,7 @@
 #include <net/netfilter/nf_queue.h>
 
 #include "46_outbound.h"
+#include "464_tables.h"
 
 struct sk_buff *out_skb;             //inbound packet
 struct iphdr *out4_hdr;             //IP header of inbound packet
