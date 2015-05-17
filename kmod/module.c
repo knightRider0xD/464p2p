@@ -81,12 +81,21 @@ int init_module() {
     in_nfhx.priority = 100;//NF_IP_PRI_NAT_SRC;             //set to equal priority as NAT src
     nf_register_hook(&in_nfhx);                     //register hook
     
-    //out_nfho.hook = on_nf_hook_out;                       //function to call when conditions below met
-    //out_nfho.hooknum = NF_IP_LOCAL_IN;            //After IPv4 packet Created and before routing
-    //out_nfho.pf = PF_INET;                           //IP packets
-    //out_nfho.priority = NF_IP_PRI_NAT_SRC;             //set to equal priority as NAT src
-    //nf_register_hook(&out_nfho);                     //register hook
+    init_46_outbound(out_nfhx);
+    
+    out_nfho.hook = on_nf_hook_out;                       //function to call when conditions below met
+    out_nfho.hooknum = 1; //NF_IP_LOCAL_IN;            //After IPv4 packet Created and before routing
+    out_nfho.pf = PF_INET;                           //IP packets
+    out_nfho.priority = 100; //NF_IP_PRI_NAT_SRC;             //set to equal priority as NAT src
+    nf_register_hook(&out_nfho);                     //register hook
 
+    out_nfhx.hook = on_nf_hook_out;                       //function to call when conditions below met
+    out_nfhx.hooknum = 1; //NF_IP6_LOCAL_IN;            //After IPv4 packet Created and before routing
+    out_nfhx.pf = PF_INET6;                           //IP packets
+    out_nfhx.priority = 100; //NF_IP_PRI_NAT_SRC;             //set to equal priority as NAT src
+    nf_register_hook(&out_nfhx);                     //register hook
+
+    
     return 0;                                    //return 0 for success
 }
 

@@ -12,12 +12,12 @@
 struct sk_buff *in_skb;             //inbound packet
 struct ipv6hdr *in6_hdr;            //IPv6 header of inbound packet
 struct iphdr *in4_hdr;              //New IPv4 header for inbound packet
-struct in6_addr *d_464_addr;        //IPv
 
 struct in_addr *d_4_addr;
 struct in_addr *s_4_addr;
 
 struct nf_hook_ops *reinject_nfho;
+struct nf_queue_entry *reinject_qent;
 
 int init_64_inbound(struct nf_hook_ops *nfho){
     // New packet header
@@ -27,6 +27,9 @@ int init_64_inbound(struct nf_hook_ops *nfho){
     //in4_hdr->check       = 0; // Ignore checksum; should have already passed checksum
     //in4_hdr->id          = 0; // Ignore packet ID; packet is unfragmented
     //in4_hdr->frag_off    = 0; // Ignore fragmentation offset & flags packet is unfragmented
+    
+    reinject_nfho = nfho;
+    
     return 0;
 }
 
@@ -36,11 +39,11 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     in_skb = *skb;
     in6_hdr = ipv6_hdr(in_skb);
 
-    // XLAT v6 local address
+    // XLAT v6 local address. NULL if not listed
     d_4_addr = local_64_xlat(&in6_hdr->daddr);
     
     // If packet dest address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
-    if (memcmp(&in6_hdr->daddr,d_4_addr,sizeof(struct in6_addr))){
+    if (d_4_addr == NULL){
 #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] IN; Regular Packet; Passing.\n");
 #endif
@@ -58,7 +61,8 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     if(s_4_addr==NULL){
 #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] IN; Remote address not found; Dropping");
-#endif        
+#endif
+        return NF_DROP;
     }
     
     // Collate new v4 header values
@@ -84,15 +88,21 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Moving to IPv4 queue.\n");
 #endif
     
-    struct nf_info *reinject_info = kzalloc(sizeof(struct nf_info));
-    reinject_info->elem = reinject_nfho;
-    reinject_info->pf = PF_INET;
-    reinject_info->hook = reinject_nfho;
-    reinject_info->indev;
-    reinject_info->outdev;
-    reinject_info->okfn;
+    struct nf_queue_entry *reinject_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
+    reinject_qent->skb = in_skb;
+    reinject_qent->elem = reinject_nfho;
+    reinject_qent->pf = PF_INET;
+    reinject_qent->hook = hooknum; //NF_IP_LOCAL_IN
+    reinject_qent->indev = in;
+    reinject_qent->outdev out;
+    reinject_qent->okfn = okfn;
+    reinject_qent->size = sizeof(struct nf_queue_entry);
     
-    ip_local_deliver(in_skb);
+    nf_reinject(reinject_qent,NF_ACCEPT);
+
+#ifdef VERBOSE_464P2P
+    printk(KERN_INFO "[464P2P] IN; 4 Packet Reinjected, 6 Packet Stolen.\n");
+#endif
     
     return NF_STOLEN;
 }
