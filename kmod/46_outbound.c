@@ -82,7 +82,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     // Allocate IPv6 header
     skb_realloc_headroom(out_skb, sizeof(struct ipv6hdr)+32);
     
-    skb_push(out_skb, sizeof(struct ipv6hdr))
+    skb_push(out_skb, sizeof(struct ipv6hdr));
     skb_set_network_header(out_skb,0);
     
     
