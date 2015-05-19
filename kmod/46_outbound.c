@@ -76,14 +76,20 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     out6_hdr->priority = (out4_hdr->tos>>4);
     out6_hdr->flow_lbl[0] = ((out4_hdr->tos&15)<<4);// + current flow label value (does not exist)
     
-    // Remove IPv4 header
-    skb_pull(out_skb, sizeof(struct iphdr));
+    // Pull mac and network layer headers ready to push new head network layer headerRemove IPv6 header
+    skb_pull(out_skb, skb_transport_offset(out_skb));
     
-    // Allocate IPv6 header
-    skb_realloc_headroom(out_skb, sizeof(struct ipv6hdr)+32);
-    
+    //Check if expanding needed here
+    if (skb_headroom(skb) < sizeof(struct ipv6hdr)){
+        // Reallocate room for IPv6 header
+        pskb_expand_head(out_skb, sizeof(struct ipv6hdr)-skb_headroom(skb), 0,GFP_ATOMIC)
+    }
+        
+    // Push space for new IPv6 header
     skb_push(out_skb, sizeof(struct ipv6hdr));
-    skb_set_network_header(out_skb,0);
+    // Realign header positions
+    skb_reset_network_header(in_skb);
+    skb_reset_mac_header(in_skb);
     
     
     // Write new v6 header data

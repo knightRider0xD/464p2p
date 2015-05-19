@@ -77,13 +77,14 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     in4_hdr->tos         = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
     
     
-    // Remove IPv6 header
-    skb_pull(in_skb, sizeof(struct ipv6hdr));
+    // Pull mac and network layer headers ready to push new head network layer headerRemove IPv6 header
+    skb_pull(in_skb, skb_transport_offset(in_skb));
     
-    // Allocate IPv4 header
-    // skb_realloc_headroom(in_skb, 48)
+    // Push space for new IPv4 header
     skb_push(in_skb, sizeof(struct iphdr));
-    skb_set_network_header(in_skb,0);
+    // Reset header positions
+    skb_reset_network_header(in_skb);
+    skb_reset_mac_header(in_skb);
     
     // Write new v4 header data
     memcpy(skb_network_header(in_skb),in4_hdr, sizeof(struct iphdr));
