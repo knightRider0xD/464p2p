@@ -82,7 +82,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     //Check if expanding needed here
     if (skb_headroom(skb) < sizeof(struct ipv6hdr)){
         // Reallocate room for IPv6 header
-        pskb_expand_head(out_skb, sizeof(struct ipv6hdr)-skb_headroom(out_skb), 0,GFP_ATOMIC)
+        pskb_expand_head(out_skb, sizeof(struct ipv6hdr)-skb_headroom(out_skb), 0,GFP_ATOMIC);
     }
         
     // Push space for new IPv6 header
