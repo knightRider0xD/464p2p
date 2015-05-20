@@ -1,0 +1,7 @@
+iface enp0s3 inet static
+address 192.168.254.1
+netmask 255.255.255.0
+
+iface enp0s3 inet6 static
+address fd16:6db2:c925:0000:2544:67fa:9e35:2876
+netmask 64
