@@ -1,5 +1,4 @@
 #include <linux/stddef.h>
-#include <linux/sysctl.h>
 //#include <linux/hashtable.h>
 //#include <linux/crc32.h>
 #include <linux/list.h>
@@ -21,11 +20,6 @@
  * Init functions for XLAT table
  ********************************/
 
-//char static_table[] = "0";
-//char dynamic_table[] = "0";
-char static_entry[56] = "0";
-char dynamic_entry[56] = "0";
-
 struct xlat_entry out_addr_cache;
 struct xlat_entry in_addr_cache;
 
@@ -42,30 +36,6 @@ uint32_t wrk;
 int pton_i;
 
 
-/* two integer items (files) */
-//static ctl_table net_464p2p_table[] = {
-//   {CTL_UNNUMBERED, "static_table", &static_table,102400, 0444, NULL, &proc_dostring,NULL, /* fill with 0's */},
-//   {CTL_UNNUMBERED, "dynamic_table", &dynamic_table,1024000, 0444, NULL, &proc_dostring,NULL, /* fill with 0's */},
-//   {CTL_UNNUMBERED, "static_entry", &static_entry,56, 0644, NULL, &proc_dostring,NULL, /* fill with 0's */},
-//   {CTL_UNNUMBERED, "dynamic_entry", &dynamic_entry,56, 0644, NULL, &proc_dostring,NULL, /* fill with 0's */},
-//   {0}
-//   };
-
-/* a directory */
-//static ctl_table net_table[] = {
-//        {CTL_UNNUMBERED, "464p2p", NULL, 0, 0555,
-//            net_464p2p_table},
-//        {0}
-//    };
-
-/* the parent directory */
-//static ctl_table root_table[] = {
-//        {CTL_NET, "net", NULL, 0, 0555,
-//            net_table},
-//        {0}
-//    }; 
-
-//static struct ctl_table_header *ctl_table_header;
 
 //DECLARE_HASHTABLE(xlat_46, 16);
 //DECLARE_HASHTABLE(xlat_64, 16);
