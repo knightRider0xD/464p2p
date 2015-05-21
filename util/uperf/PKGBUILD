@@ -2,14 +2,14 @@
 # Contributor: Ian Knight <ian@knightly.xyz>
 
 pkgname=uperf-cvs
-pkgver=1.13
+pkgver=20150521
 pkgrel=1
 pkgdesc="A network performance tool that supports modelling and replay of various networking patterns"
 arch=('i686' 'x86_64')
 url="http://www.uperf.org/"
 license=('GPL3')
 depends=('lksctp-tools')
-makedepends=('cvs')
+makedepends=('cvs' 'automake')
 provides=('uperf')
 conflicts=('uperf')
 
@@ -35,10 +35,12 @@ build() {
   cp -r "$srcdir/$_cvsmod" "$srcdir/$_cvsmod-build"
   cd "$srcdir/$_cvsmod-build"
 
-  ./configure --prefix=/usr \
+  export UPERF_LIBS="-lpthread"
+  ./configure \
+  --prefix=/usr \
   --datadir=/usr/share/uperf
 
-  make 
+  cmake 
 }
 
 package() {
