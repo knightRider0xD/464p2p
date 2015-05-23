@@ -3,6 +3,9 @@ obj-m += 464_p2p.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+	
+install:
+	insmod ./464_p2p.ko
 
 clean:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
