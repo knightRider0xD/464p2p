@@ -103,8 +103,8 @@ int xlat_add(char xlat_str[]){
  */
 int static_xlat_add(){
     
-    strncpy(static_entry,"0000:0000:0000:0000:0000:0000:0000:0000 000.000.000.000",56);
-    xlat_add(static_entry);
+    //strncpy(static_entry,"0000:0000:0000:0000:0000:0000:0000:0000 000.000.000.000",56);
+    xlat_add("0000:0000:0000:0000:0000:0000:0000:0000 000.000.000.000");
     return 1;
     /*
     //Check entry if done, next or new
