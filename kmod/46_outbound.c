@@ -46,24 +46,24 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     
     // If packet src address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
     if (s_6_addr == NULL){
-#ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] OUT; Regular Packet; Passing.\n");
-#endif
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] OUT; Regular Packet; Passing.\n");
+        #endif
         return NF_ACCEPT;
     }
     
     // If packet dest address is a 464p2p address, convert packet, STOLEN and queue for v4 processing.
-#ifdef VERBOSE_464P2P
-    printk(KERN_INFO "[464P2P] OUT; My Packet; Converting 4->6 ...");
-#endif  
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] OUT; My Packet; Converting 4->6 ...");
+    #endif  
     
     // XLAT v4 remote address
     d_6_addr = remote_46_xlat((struct in_addr*) &out4_hdr->daddr);
     
     if(d_6_addr==NULL){
-#ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] OUT; Remote address not found; Dropping");
-#endif        
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] OUT; Remote address not found; Dropping");
+        #endif        
         return NF_DROP;
     }
     
@@ -82,6 +82,9 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     //Check if expanding needed here
     if (skb_headroom(skb) < sizeof(struct ipv6hdr)){
         // Reallocate room for IPv6 header
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] OUT; 4->6 Expanding SKB.\n");
+        #endif
         pskb_expand_head(out_skb, sizeof(struct ipv6hdr)-skb_headroom(out_skb), 0,GFP_ATOMIC);
     }
         
@@ -95,9 +98,9 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     // Write new v6 header data
     memcpy(skb_network_header(out_skb),out6_hdr, sizeof(struct ipv6hdr));
     
-#ifdef VERBOSE_464P2P
-    printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Moving to IPv6 queue.\n");
-#endif
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Moving to IPv6 queue.\n");
+    #endif
     
     reinject_6_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
     reinject_6_qent->skb = out_skb;
@@ -111,9 +114,9 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     
     nf_reinject(reinject_6_qent,NF_ACCEPT);
 
-#ifdef VERBOSE_464P2P
-    printk(KERN_INFO "[464P2P] OUT; 6 Packet Reinjected, 4 Packet Stolen.\n");
-#endif
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] OUT; 6 Packet Reinjected, 4 Packet Stolen.\n");
+    #endif
     
     return NF_STOLEN;
     

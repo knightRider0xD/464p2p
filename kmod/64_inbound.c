@@ -47,24 +47,24 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     
     // If packet dest address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
     if (d_4_addr == NULL){
-#ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] IN; Regular Packet; Passing.\n");
-#endif
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] IN; Regular Packet; Passing.\n");
+        #endif
         return NF_ACCEPT;
     }
     
     // If packet dest address is a 464p2p address, convert packet, STOLEN and queue for v4 processing.
-#ifdef VERBOSE_464P2P
-    printk(KERN_INFO "[464P2P] IN; My Packet; Converting 6->4 ...");
-#endif  
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] IN; My Packet; Converting 6->4 ...");    
+    #endif  
     
     // XLAT v6 remote address
     s_4_addr = remote_64_xlat(&in6_hdr->saddr);
     
     if(s_4_addr==NULL){
-#ifdef VERBOSE_464P2P
+    #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] IN; Remote address not found; Dropping");
-#endif
+    #endif
         return NF_DROP;
     }
     
@@ -89,9 +89,9 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     // Write new v4 header data
     memcpy(skb_network_header(in_skb),in4_hdr, sizeof(struct iphdr));
     
-#ifdef VERBOSE_464P2P
-    printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Moving to IPv4 queue.\n");
-#endif
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Moving to IPv4 queue.\n");
+    #endif
     
     reinject_4_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
     reinject_4_qent->skb = in_skb;
@@ -105,9 +105,9 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const str
     
     nf_reinject(reinject_4_qent,NF_ACCEPT);
 
-#ifdef VERBOSE_464P2P
-    printk(KERN_INFO "[464P2P] IN; 4 Packet Reinjected, 6 Packet Stolen.\n");
-#endif
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] IN; 4 Packet Reinjected, 6 Packet Stolen.\n");
+    #endif
     
     return NF_STOLEN;
 }

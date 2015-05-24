@@ -42,31 +42,48 @@ int static_table_status;
 //On load using 'insmod'
 int init_module() {
     
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] LOAD; Initialising.\n");
+        #endif
+    
     in4_arg = kzalloc(sizeof(struct in_addr), GFP_KERNEL);
     if(in4_pton(v4Addr,in4_arg)!=0){
-        printk(KERN_INFO "Invalid IPv4 Address\n");
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] LOAD; Invalid IPv4 Address Supplied. Unloading.\n");
+        #endif
         kfree(in4_arg);
         return 1;
     }
     
     in6_arg = kzalloc(sizeof(struct in6_addr), GFP_KERNEL);
     if(in6_pton(v6Addr,in6_arg)!=0){
-        printk(KERN_INFO "Invalid IPv6 Address\n");
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] LOAD; Invalid IPv6 Address Supplied. Unloading.\n");
+        #endif
         kfree(in4_arg);
         kfree(in6_arg);
         return 1;
     }
     
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] LOAD; Initialise 464_tables & Add local addresses.\n");
+    #endif
     init_tables();
     local_xlat_add(in6_arg,in4_arg);
     
     // Load initial static entries to table
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] LOAD; Add static entries.\n");
+    #endif
     static_table_status = 1;
     do {
         static_table_status = static_xlat_add();
         msleep(10);
     } while (static_table_status == 0);
     
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] LOAD; Init 64 & Register Hook.\n");
+    #endif
     init_64_inbound(&in_nfhx);
     
     in_nfho.hook = on_nf_hook_in;                       //function to call when conditions below met
@@ -81,6 +98,9 @@ int init_module() {
     in_nfhx.priority = 100;//NF_IP_PRI_NAT_SRC;             //set to equal priority as NAT src
     nf_register_hook(&in_nfhx);                     //register hook
     
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] LOAD; Init 46 & Register Hook.\n");
+    #endif
     init_46_outbound(&out_nfhx);
     
     out_nfho.hook = on_nf_hook_out;                       //function to call when conditions below met
@@ -102,13 +122,22 @@ int init_module() {
 //On unload using 'rmmod'
 void cleanup_module()
 {
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] UNLOAD; Unregister NF Hooks.\n");
+    #endif
     // remove hooks
     nf_unregister_hook(&in_nfho);
-    //nf_unregister_hook(&out_nfho);
+    nf_unregister_hook(&out_nfho);
+    nf_unregister_hook(&in_nfhx);
+    nf_unregister_hook(&out_nfhx);
+    
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] UNLOAD; Housekeeping.\n");
+    #endif
     
     //Clean XLAT tables
     cleanup_tables();
-    // TODO free memory if needed
+    // Free memory
     kfree(in4_arg);
     kfree(in6_arg);
     
