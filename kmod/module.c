@@ -14,6 +14,8 @@
 #include "46_outbound.h"
 #include "464_tables.h"
 
+#define VERBOSE_464P2P
+
 // Compile with -D 464P2P_VERBOSE for debugging information
 
 MODULE_LICENSE("GPL");
