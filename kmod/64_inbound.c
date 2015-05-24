@@ -12,6 +12,8 @@
 #include "64_inbound.h"
 #include "464_tables.h"
 
+#define VERBOSE_464P2P
+
 struct sk_buff *in_skb;             //inbound packet
 struct ipv6hdr *in6_hdr;            //IPv6 header of inbound packet
 struct iphdr *in4_hdr;              //New IPv4 header for inbound packet
