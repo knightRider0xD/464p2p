@@ -228,7 +228,7 @@ struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
     list_for_each_entry(current_host, &xlat_local, linked_list_data){
         
         // If match return pointer to corresponding IPv4 address
-        if(!memcmp(current_host->in4,local_4_addr,sizeof(struct in_addr))){
+        if(!memcmp(&current_host->in4,local_4_addr,sizeof(struct in_addr))){
             //TODO Move to head
             return current_host->in6;
         }

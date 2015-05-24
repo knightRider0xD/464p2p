@@ -1,2 +1,2 @@
 #!/bin/bash
-dmesg -wH > dmesgout.txt &
+dmesg -wH > dmesgout.txt
