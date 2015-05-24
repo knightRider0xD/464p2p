@@ -224,9 +224,9 @@ struct in_addr * local_64_xlat(struct in6_addr *local_6_addr){
 struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
     printk(KERN_INFO "[464P2P] 46X; 1\n");
     //list lookup
-    struct host_entry * current_host; // Pointer to current position in XLAT list
+    struct host_entry *current_host; // Pointer to current position in XLAT list
     list_for_each_entry(current_host, &xlat_local, linked_list_data){
-        
+        printk("%p=%d, %p=%d\n", current_host->in4, *(current_host->in4), local_4_addr, *local_4_addr)
         // If match return pointer to corresponding IPv4 address
         if(!memcmp(current_host->in4,local_4_addr,sizeof(struct in_addr))){
             //TODO Move to head
