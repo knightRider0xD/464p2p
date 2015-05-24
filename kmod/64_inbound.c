@@ -41,9 +41,9 @@ int init_64_inbound(struct nf_hook_ops *nfho){
 // On NetFilter hook triggered
 unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff **skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
   
-    #ifdef VERBOSE_464P2P
+    //#ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] IN; New Packet.\n");
-    #endif
+    //#endif
     
     in_skb = *skb;
     in6_hdr = ipv6_hdr(in_skb);
