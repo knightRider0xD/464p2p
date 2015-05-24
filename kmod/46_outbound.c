@@ -40,16 +40,16 @@ int init_46_outbound(struct nf_hook_ops *nfho){
 // On NetFilter hook triggered
 unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)){
 
-    #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] OUT; New Packet.\n");
-    #endif
+    printk(KERN_INFO "[464P2P] OUT; 1\n");
     
     out_skb = *skb;
-    out4_hdr = ip_hdr(out_skb);
     
+    printk(KERN_INFO "[464P2P] OUT; 2\n");
+    out4_hdr = ip_hdr(out_skb);
+    printk(KERN_INFO "[464P2P] OUT; 3\n");
     // XLAT v4 local address
     s_6_addr = local_46_xlat((struct in_addr*) &out4_hdr->saddr);
-    
+    printk(KERN_INFO "[464P2P] OUT; 4\n");
     // If packet src address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
     if (s_6_addr == NULL){
         #ifdef VERBOSE_464P2P
