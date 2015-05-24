@@ -44,6 +44,10 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     
     out_skb = skb;
     
+    if(!out_skb){
+        return NF_ACCEPT;
+    }
+    
     printk(KERN_INFO "[464P2P] OUT; 2\n");
     out4_hdr = ip_hdr(out_skb);
     printk(KERN_INFO "[464P2P] OUT; 3\n");

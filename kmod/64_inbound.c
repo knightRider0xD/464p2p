@@ -46,6 +46,11 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     //#endif
     
     in_skb = skb;
+    
+    if(!in_skb){
+        return NF_ACCEPT;
+    }
+    
     in6_hdr = ipv6_hdr(in_skb);
 
     // XLAT v6 local address. NULL if not listed
