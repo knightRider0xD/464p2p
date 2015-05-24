@@ -4,7 +4,7 @@ obj-m += 464_p2p.o
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 
-debug:
+all-debug:
 	make CFLAGS="-DVERBOSE_464P2P" -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 	
 install:

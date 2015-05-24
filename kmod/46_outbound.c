@@ -80,7 +80,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff **skb, const st
     skb_pull(out_skb, skb_transport_offset(out_skb));
     
     //Check if expanding needed here
-    if (skb_headroom(skb) < sizeof(struct ipv6hdr)){
+    if (skb_headroom(out_skb) < sizeof(struct ipv6hdr)){
         // Reallocate room for IPv6 header
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] OUT; 4->6 Expanding SKB.\n");
