@@ -44,10 +44,6 @@ LIST_HEAD(xlat_remote);
 
 int init_tables()
 {
-    /*ctl_table_header = register_sysctl_table(root_table,0);
-    //return ctl_table_header;*/
-   
-
     //hash_init(xlat_46);
     //hash_init(xlat_64);
     
