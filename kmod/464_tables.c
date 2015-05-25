@@ -232,6 +232,7 @@ struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
             //TODO Move to head
             return current_host->in6;
         }
+        printk(KERN_INFO "[464P2P] 46X; 2\n");
     }
     
     return NULL;  //No match found
