@@ -312,6 +312,10 @@ struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
     struct host_entry * current_host; // Pointer to current position in XLAT list
     list_for_each_entry(current_host, &xlat_remote, linked_list_data){
         
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] 46X; %p=%x, %p=%x, %p\n", current_host->in4, *(current_host->in4), remote_4_addr, *remote_4_addr, current_host->linked_list_data.next);
+        #endif
+        
         // If match return pointer to corresponding IPv4 address
         if(!memcmp(current_host->in4,remote_4_addr,sizeof(struct in_addr))){
             //TODO Move to head
