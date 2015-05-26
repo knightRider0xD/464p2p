@@ -77,6 +77,7 @@ int xlat_add(char xlat_str[]){
     
     if(in6_pton(addr_6,in6)!=0){
         kfree(in6);
+        printk("ohno1");
         return -1;
     }
     
@@ -88,11 +89,13 @@ int xlat_add(char xlat_str[]){
     if(in4_pton(addr_4,in4)!=0){
         kfree(in6);
         kfree(in4);
+        printk("ohno2");
         return -2;
     }
     
     remote_xlat_add(in6, in4);
     return 0;
+    printk("huzzah");
     
 }
 
