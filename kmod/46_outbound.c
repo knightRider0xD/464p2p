@@ -69,14 +69,14 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     
     // XLAT v4 remote address
     d_6_addr = remote_46_xlat((struct in_addr*) &out4_hdr->daddr);
-    
+    printk(KERN_INFO "[464P2P] OUT; Headers Built0");
     if(d_6_addr==NULL){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] OUT; Remote address not found; Dropping");
         #endif        
         return NF_DROP;
     }
-    
+    printk(KERN_INFO "[464P2P] OUT; Headers Built0");
     // Collate new v6 header values
     out6_hdr->payload_len     = out4_hdr->tot_len-sizeof(struct iphdr); // payload length = total length - header size
     printk(KERN_INFO "[464P2P] OUT; Headers Built0");
