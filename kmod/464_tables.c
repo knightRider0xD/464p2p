@@ -310,6 +310,8 @@ struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
     
     //list lookup
     struct host_entry * current_host; // Pointer to current position in XLAT list
+    printk(KERN_INFO "[464P2P] 46X_R;\n");
+    
     list_for_each_entry(current_host, &xlat_remote, linked_list_data){
         
         #ifdef VERBOSE_464P2P
