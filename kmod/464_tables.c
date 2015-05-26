@@ -77,7 +77,6 @@ int xlat_add(char xlat_str[]){
     
     if(in6_pton(addr_6,in6)!=0){
         kfree(in6);
-        printk("ohno1");
         return -1;
     }
     
@@ -89,13 +88,11 @@ int xlat_add(char xlat_str[]){
     if(in4_pton(addr_4,in4)!=0){
         kfree(in6);
         kfree(in4);
-        printk("ohno2");
         return -2;
     }
     
     remote_xlat_add(in6, in4);
     return 0;
-    printk("huzzah");
     
 }
 
@@ -106,7 +103,7 @@ int static_xlat_add(){
     
     //strncpy(static_entry,"0000:0000:0000:0000:0000:0000:0000:0000 000.000.000.000",56);
     //xlat_add("0000:0000:0000:0000:0000:0000:0000:0000 000.000.000.000");
-    xlat_add("fd16:6db2:c925:0000:2544:67fa:9e35:2876 192.168.253.1");
+    xlat_add("fd16:6db2:c925:0000:2544:67fa:9e35:2876 192.168.253.001");
     return 1;
     /*
     //Check entry if done, next or new
@@ -313,8 +310,6 @@ struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
     
     //list lookup
     struct host_entry * current_host; // Pointer to current position in XLAT list
-    printk(KERN_INFO "[464P2P] 46X_R;\n");
-    
     list_for_each_entry(current_host, &xlat_remote, linked_list_data){
         
         #ifdef VERBOSE_464P2P
