@@ -69,37 +69,26 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     
     // XLAT v4 remote address
     d_6_addr = remote_46_xlat((struct in_addr*) &out4_hdr->daddr);
-    printk(KERN_INFO "[464P2P] OUT; Headers Built0");
+    
     if(d_6_addr==NULL){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] OUT; Remote address not found; Dropping");
         #endif        
         return NF_DROP;
     }
-    printk(KERN_INFO "[464P2P] OUT; Headers Built0");
+    
     // Collate new v6 header values
     out6_hdr->payload_len     = out4_hdr->tot_len-sizeof(struct iphdr); // payload length = total length - header size
-    printk(KERN_INFO "[464P2P] OUT; Headers Built0");
     out6_hdr->nexthdr         = out4_hdr->protocol;
-    printk(KERN_INFO "[464P2P] OUT; Headers Built0");
     memcpy(&out6_hdr->saddr, s_6_addr,sizeof(struct in6_addr));
     memcpy(&out6_hdr->daddr, d_6_addr,sizeof(struct in6_addr));
-    printk(KERN_INFO "[464P2P] OUT; Headers Built0");
     out6_hdr->hop_limit        = out4_hdr->ttl;
     out6_hdr->priority = (out4_hdr->tos>>4);
     out6_hdr->flow_lbl[0] = ((out4_hdr->tos&15)<<4);// + current flow label value (does not exist)
-    printk(KERN_INFO "[464P2P] OUT; Headers Built0");
     
-    #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] OUT; Headers Built");
-    #endif    
     
     // Pull mac and network layer headers ready to push new head network layer headerRemove IPv6 header
     skb_pull(out_skb, skb_transport_offset(out_skb));
-    
-    #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] OUT; Made room");
-    #endif
     
     //Check if expanding needed here
     if (skb_headroom(out_skb) < sizeof(struct ipv6hdr)){
@@ -112,18 +101,10 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
         
     // Push space for new IPv6 header
     skb_push(out_skb, sizeof(struct ipv6hdr));
-    
-    #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] OUT; Prep Header");
-    #endif
-    
     // Realign header positions
     skb_reset_network_header(out_skb);
     skb_reset_mac_header(out_skb);
     
-    #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] OUT; Realign Header");
-    #endif
     
     // Write new v6 header data
     memcpy(skb_network_header(out_skb),out6_hdr, sizeof(struct ipv6hdr));
@@ -141,6 +122,8 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     reinject_6_qent->outdev = *(&out);
     reinject_6_qent->okfn = okfn;
     reinject_6_qent->size = sizeof(struct nf_queue_entry);
+    
+    printk(KERN_INFO "[464P2P] OUT; hello\n");
     
     nf_reinject(reinject_6_qent,NF_ACCEPT);
 
