@@ -187,6 +187,8 @@ int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr){
         .linked_list_data = LIST_HEAD_INIT(new_entry.linked_list_data)
     };
     
+    printk("%p=%d, %p=%d, %p\n", current_host->in4, *(current_host->in4), local_4_addr, *local_4_addr, current_host->linked_list_data.next);
+    
     list_add(&new_entry.linked_list_data,&xlat_local);
     
     return 0;
@@ -222,9 +224,9 @@ struct in_addr * local_64_xlat(struct in6_addr *local_6_addr){
  * Function to translate local IPv6 Address to its local IPv4 address
  */
 struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
-    printk(KERN_INFO "[464P2P] 46X; 1\n");
     //list lookup
     struct host_entry *current_host; // Pointer to current position in XLAT list
+    printk(KERN_INFO "[464P2P] 46X; 1\n");
     list_for_each_entry(current_host, &xlat_local, linked_list_data){
         printk("%p=%d, %p=%d, %p\n", current_host->in4, *(current_host->in4), local_4_addr, *local_4_addr, current_host->linked_list_data.next);
         // If match return pointer to corresponding IPv4 address
