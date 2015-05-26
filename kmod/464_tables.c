@@ -164,8 +164,8 @@ int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_add
     */
     
     struct host_entry *new_entry = kzalloc(sizeof(struct host_entry),GFP_KERNEL);
-    new_entry->in6 = remote_6_addr,
-    new_entry->in4 = remote_4_addr,
+    new_entry->in6 = remote_6_addr;
+    new_entry->in4 = remote_4_addr;
     INIT_LIST_HEAD(&new_entry->linked_list_data);
     
     list_add(&new_entry->linked_list_data,&xlat_remote);
@@ -181,8 +181,8 @@ int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_add
 int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr){
     
     struct host_entry *new_entry = kzalloc(sizeof(struct host_entry),GFP_KERNEL);
-    new_entry->in6 = remote_6_addr,
-    new_entry->in4 = remote_4_addr,
+    new_entry->in6 = remote_6_addr;
+    new_entry->in4 = remote_4_addr;
     INIT_LIST_HEAD(&new_entry->linked_list_data);
     
     list_add(&new_entry->linked_list_data,&xlat_local);
