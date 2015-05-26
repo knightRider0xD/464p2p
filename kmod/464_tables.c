@@ -336,25 +336,16 @@ int in4_pton(char *str, struct in_addr *target_addr){
     lval = 0;
     wrk = 0;
     
-    // convert octet a
-    strncpy(buf,&str[0],3); //extract octet chars from string
-    kstrtol(buf,10,&lval); // convert to long
-    if (lval<0){ // if did not convert, set octet to 0
-        lval=0;
-    }
-    wrk += (uint32_t) lval; // add to working addr
-    wrk <<= 8; // shift octet over to make room for next one
-    
-    // convert octet b
-    strncpy(buf,&str[4],3);
+    // convert octet d
+    strncpy(buf,&str[12],3);
     kstrtol(buf,10,&lval);
     if (lval<0){
         lval=0;
     }
     wrk += (uint32_t) lval;
-    wrk <<= 8;
+     wrk <<= 8; // shift octet over to make room for next one
     
-    // convert octet c
+        // convert octet c
     strncpy(buf,&str[8],3);
     kstrtol(buf,10,&lval);
     if (lval<0){
@@ -363,13 +354,24 @@ int in4_pton(char *str, struct in_addr *target_addr){
     wrk += (uint32_t) lval;
     wrk <<= 8;
     
-    // convert octet d
-    strncpy(buf,&str[12],3);
+        // convert octet b
+    strncpy(buf,&str[4],3);
     kstrtol(buf,10,&lval);
     if (lval<0){
         lval=0;
     }
     wrk += (uint32_t) lval;
+    wrk <<= 8;
+    
+        // convert octet a
+    strncpy(buf,&str[0],3); //extract octet chars from string
+    kstrtol(buf,10,&lval); // convert to long
+    if (lval<0){ // if did not convert, set octet to 0
+        lval=0;
+    }
+    wrk += (uint32_t) lval; // add to working addr
+    
+
     
     target_addr->s_addr = wrk;
     return 0;
