@@ -79,12 +79,16 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     
     // Collate new v6 header values
     out6_hdr->payload_len     = out4_hdr->tot_len-sizeof(struct iphdr); // payload length = total length - header size
+    printk(KERN_INFO "[464P2P] OUT; Headers Built0");
     out6_hdr->nexthdr         = out4_hdr->protocol;
+    printk(KERN_INFO "[464P2P] OUT; Headers Built0");
     memcpy(&out6_hdr->saddr, s_6_addr,sizeof(struct in6_addr));
     memcpy(&out6_hdr->daddr, d_6_addr,sizeof(struct in6_addr));
+    printk(KERN_INFO "[464P2P] OUT; Headers Built0");
     out6_hdr->hop_limit        = out4_hdr->ttl;
     out6_hdr->priority = (out4_hdr->tos>>4);
     out6_hdr->flow_lbl[0] = ((out4_hdr->tos&15)<<4);// + current flow label value (does not exist)
+    printk(KERN_INFO "[464P2P] OUT; Headers Built0");
     
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] OUT; Headers Built");
