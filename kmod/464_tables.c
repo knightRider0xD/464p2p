@@ -185,8 +185,6 @@ int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr){
     new_entry->in4 = remote_4_addr,
     INIT_LIST_HEAD(&new_entry->linked_list_data);
     
-    printk("%p=%d, %p=%d, %p\n", current_host->in4, *(current_host->in4), local_4_addr, *local_4_addr, current_host->linked_list_data.next);
-    
     list_add(&new_entry->linked_list_data,&xlat_local);
     
     return 0;
