@@ -86,8 +86,16 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     out6_hdr->priority = (out4_hdr->tos>>4);
     out6_hdr->flow_lbl[0] = ((out4_hdr->tos&15)<<4);// + current flow label value (does not exist)
     
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] OUT; Headers Built");
+    #endif    
+    
     // Pull mac and network layer headers ready to push new head network layer headerRemove IPv6 header
     skb_pull(out_skb, skb_transport_offset(out_skb));
+    
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] OUT; Made room");
+    #endif
     
     //Check if expanding needed here
     if (skb_headroom(out_skb) < sizeof(struct ipv6hdr)){
@@ -100,10 +108,18 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
         
     // Push space for new IPv6 header
     skb_push(out_skb, sizeof(struct ipv6hdr));
+    
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] OUT; Prep Header");
+    #endif
+    
     // Realign header positions
     skb_reset_network_header(out_skb);
     skb_reset_mac_header(out_skb);
     
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] OUT; Realign Header");
+    #endif
     
     // Write new v6 header data
     memcpy(skb_network_header(out_skb),out6_hdr, sizeof(struct ipv6hdr));
