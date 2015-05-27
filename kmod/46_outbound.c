@@ -39,8 +39,6 @@ int init_46_outbound(struct nf_hook_ops *nfho){
 
 // On NetFilter hook triggered
 unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)){
-
-    printk(KERN_INFO "[464P2P] OUT; 1\n");
     
     out_skb = skb;
     
@@ -48,12 +46,11 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
         return NF_ACCEPT;
     }
     
-    printk(KERN_INFO "[464P2P] OUT; 2\n");
     out4_hdr = ip_hdr(out_skb);
-    printk(KERN_INFO "[464P2P] OUT; 3\n");
+
     // XLAT v4 local address
     s_6_addr = local_46_xlat((struct in_addr*) &(out4_hdr->saddr));
-    printk(KERN_INFO "[464P2P] OUT; 4\n");
+
     // If packet src address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
     if (s_6_addr == NULL){
         #ifdef VERBOSE_464P2P
@@ -86,6 +83,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     out6_hdr->priority = (out4_hdr->tos>>4);
     out6_hdr->flow_lbl[0] = ((out4_hdr->tos&15)<<4);// + current flow label value (does not exist)
     
+    printk(KERN_INFO "[464P2P] OUT; mac size:%d;net size:%d.\n",skb_mac_header(out_skb)-skb_network_header(out_skb), skb_network_header_len(out_skb));
     
     // Pull mac and network layer headers ready to push new head network layer headerRemove IPv6 header
     skb_pull(out_skb, skb_transport_offset(out_skb));
