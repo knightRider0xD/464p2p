@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo echo starting
 git pull
 cd kmod/
 make fresh

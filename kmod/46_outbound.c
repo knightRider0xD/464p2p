@@ -83,7 +83,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     out6_hdr->priority = (out4_hdr->tos>>4);
     out6_hdr->flow_lbl[0] = ((out4_hdr->tos&15)<<4);// + current flow label value (does not exist)
     
-    printk(KERN_INFO "[464P2P] OUT; mac size:%d;net size:%d.\n",skb_mac_header(out_skb)-skb_network_header(out_skb), skb_network_header_len(out_skb));
+    printk(KERN_INFO "[464P2P] OUT; mac size:%d;net size:%d.\n",skb_network_header(out_skb)-skb_mac_header(out_skb), skb_network_header_len(out_skb));
     
     // Pull mac and network layer headers ready to push new head network layer headerRemove IPv6 header
     skb_pull(out_skb, skb_transport_offset(out_skb));
