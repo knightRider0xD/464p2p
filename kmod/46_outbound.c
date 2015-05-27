@@ -125,7 +125,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     
     nf_reinject(reinject_6_qent,NF_ACCEPT);*/
     
-    NF_HOOK(NFPROTO_IPV6, NF_INET_LOCAL_OUT, out_skb, NULL,in, out);
+    NF_HOOK(NFPROTO_IPV6, NF_INET_LOCAL_OUT, skb, NULL,out, dst_output);
 
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] OUT; 6 Packet Reinjected, 4 Packet Stolen.\n");
