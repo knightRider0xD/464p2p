@@ -1,4 +1,3 @@
-
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/netfilter.h>
@@ -6,7 +5,7 @@
 #include <linux/netfilter_ipv6.h>
 #include <linux/ip.h>
 #include <linux/skbuff.h> 
-
+#include <linux/ipv6.h>
 #include <net/ipv6.h>
 #include <net/netfilter/nf_queue.h>
 
