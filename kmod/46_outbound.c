@@ -83,7 +83,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     out6_hdr->priority = (out4_hdr->tos>>4);
     out6_hdr->flow_lbl[0] = ((out4_hdr->tos&15)<<4);// + current flow label value (does not exist)
     
-    printk(KERN_INFO "[464P2P] OUT; mac size:%d;net size:%d.\n",skb_network_header(out_skb)-skb_mac_header(out_skb), skb_network_header_len(out_skb));
+    //printk(KERN_INFO "[464P2P] OUT; mac size:%d;net size:%d.\n",skb_network_header(out_skb)-skb_mac_header(out_skb), skb_network_header_len(out_skb));
     
     // Pull mac and network layer headers ready to push new head network layer headerRemove IPv6 header
     skb_pull(out_skb, skb_transport_offset(out_skb));
@@ -101,7 +101,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     skb_push(out_skb, sizeof(struct ipv6hdr));
     // Realign header positions
     skb_reset_network_header(out_skb);
-    skb_reset_mac_header(out_skb);
+    // skb_reset_mac_header(out_skb);
     
     
     // Write new v6 header data
@@ -111,7 +111,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
         printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Moving to IPv6 queue.\n");
     #endif
     
-    reinject_6_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
+    /*reinject_6_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
     reinject_6_qent->skb = out_skb;
     reinject_6_qent->elem = reinject_6_nfho;
     reinject_6_qent->pf = PF_INET6;
@@ -123,7 +123,9 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     
     printk(KERN_INFO "[464P2P] OUT; hello\n");
     
-    nf_reinject(reinject_6_qent,NF_ACCEPT);
+    nf_reinject(reinject_6_qent,NF_ACCEPT);*/
+    
+    NF_HOOK(NFPROTO_IPV6, NF_INET_LOCAL_OUT, out_skb, NULL,in, out);
 
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] OUT; 6 Packet Reinjected, 4 Packet Stolen.\n");
