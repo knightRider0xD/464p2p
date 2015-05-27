@@ -104,7 +104,7 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Moving to IPv4 queue.\n");
     #endif
     
-    reinject_4_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
+    /*reinject_4_qent = kzalloc(sizeof(struct nf_queue_entry),GFP_KERNEL);
     reinject_4_qent->skb = in_skb;
     reinject_4_qent->elem = reinject_4_nfho;
     reinject_4_qent->pf = PF_INET;
@@ -114,8 +114,10 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     reinject_4_qent->okfn = okfn;
     reinject_4_qent->size = sizeof(struct nf_queue_entry);
     
-    nf_reinject(reinject_4_qent,NF_ACCEPT);
-
+    nf_reinject(reinject_4_qent,NF_ACCEPT);*/
+    
+    NF_HOOK(NFPROTO_IPV4, NF_INET_LOCAL_IN, skb, in, NULL,ip_local_deliver_finish);
+    
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] IN; 4 Packet Reinjected, 6 Packet Stolen.\n");
     #endif
