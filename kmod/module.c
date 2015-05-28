@@ -37,6 +37,10 @@ static char *v6Addr = "0000:0000:0000:0000:0000:0000:0000:0000";
 module_param(v6Addr, charp, 0000);
 MODULE_PARM_DESC(v6Addr, "The IPv6 Address to map");
 
+static int outboundfl = 0;
+module_param(outboundfl, int, 0);
+MODULE_PARM_DESC(outboundfl, "enables outbound IPv6 flow labels");
+
 struct in_addr *in4_arg;
 struct in6_addr *in6_arg;
 int static_table_status;
@@ -86,24 +90,19 @@ int init_module() {
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] LOAD; Init 64 & Register Hook.\n");
     #endif
-    init_64_inbound(&in_nfhx);
     
     in_nfho.hook = on_nf_hook_in;                       //function to call when conditions below met
     in_nfho.hooknum = 1; //NF_IP6_LOCAL_IN;            //After IPv6 packet routed and before local delivery
     in_nfho.pf = PF_INET6;                           //IP packets
     in_nfho.priority = 100;//NF_IP6_PRI_NAT_SRC;             //set to equal priority as NAT src
     nf_register_hook(&in_nfho);                     //register hook
-    /*
-    in_nfhx.hook = x_nf_hook_in;                       //function to call when conditions below met
-    in_nfhx.hooknum = 1; //NF_IP_LOCAL_IN;            //After IPv6 packet routed and before local delivery
-    in_nfhx.pf = PF_INET;                           //IP packets
-    in_nfhx.priority = 100;//NF_IP_PRI_NAT_SRC;             //set to equal priority as NAT src
-    nf_register_hook(&in_nfhx);                     //register hook
-    */
+
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] LOAD; Init 46 & Register Hook.\n");
     #endif
-    init_46_outbound(&out_nfhx);
+    if(outboundfl){                 //flowlabel support
+        enable_46_flowlabels();
+    }
     
     out_nfho.hook = on_nf_hook_out;                       //function to call when conditions below met
     out_nfho.hooknum = 3; //NF_IP_LOCAL_OUT;            //After IPv4 packet Created and before routing
@@ -111,12 +110,7 @@ int init_module() {
     out_nfho.priority = 100; //NF_IP_PRI_NAT_SRC;             //set to equal priority as NAT src
     nf_register_hook(&out_nfho);                     //register hook
 
-    /*out_nfhx.hook = x_nf_hook_out;                       //function to call when conditions below met
-    out_nfhx.hooknum = 3; //NF_IP6_LOCAL_OUT;            //After IPv4 packet Created and before routing
-    out_nfhx.pf = PF_INET6;                           //IP packets
-    out_nfhx.priority = 100; //NF_IP_PRI_NAT_SRC;             //set to equal priority as NAT src
-    nf_register_hook(&out_nfhx);                     //register hook
-    */
+
     
     return 0;                                    //return 0 for success
 }
@@ -130,8 +124,6 @@ void cleanup_module()
     // remove hooks
     nf_unregister_hook(&in_nfho);
     nf_unregister_hook(&out_nfho);
-    //nf_unregister_hook(&in_nfhx);
-    //1nf_unregister_hook(&out_nfhx);
     
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] UNLOAD; Housekeeping.\n");
