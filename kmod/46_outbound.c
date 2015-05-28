@@ -22,7 +22,6 @@ struct in6_addr *s_6_addr;
 struct in6_addr *d_6_addr;
 
 struct flowi6 *reinject_fl6;
-int sent;
 
 static int outbound_46_flowlabels = 0;
 static struct ipv6_pinfo *flow_pinfo;
@@ -101,12 +100,10 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     #endif
     
     if(outbound_46_flowlabels){
-        out_skb->sk->pinet6 = flow_pinfo;
+        ((struct inet_sock *)out_skb->sk)->pinet6 = flow_pinfo;
     }
-        
-    sent = ip6_xmit(out_skb->sk, out_skb, reinject_fl6,NULL, out4_hdr->tos)
 
-    if(sent<0){
+    if(ip6_xmit(out_skb->sk, out_skb, reinject_fl6,NULL, out4_hdr->tos) < 0){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] OUT; Error Sending 6 Packet; DROP.\n");
         #endif

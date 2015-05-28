@@ -23,8 +23,7 @@ struct iphdr *in4_hdr;              //New IPv4 header for inbound packet
 struct in_addr *d_4_addr;
 struct in_addr *s_4_addr;
 
-struct flowi *reinject_fl4;
-int sent;
+struct flowi4 *reinject_fl4;
 
 // On NetFilter hook triggered
 unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
@@ -69,11 +68,11 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     
     //Prep new v4 Header info
     reinject_fl4 = kzalloc(sizeof(struct flowi4),GFP_KERNEL);
-    reinject_fl4->daddr = *d_4_addr;
-    reinject_fl4->saddr = *s_4_addr;
-    reinject_fl4->flowi4_proto = in4_hdr->nexthdr;
+    reinject_fl4->daddr = d_4_addr->s_addr;
+    reinject_fl4->saddr = s_4_addr->s_addr;
+    reinject_fl4->flowi4_proto = in6_hdr->nexthdr;
     reinject_fl4->flowi4_tos = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
-    reinject_fl4->fl6_dport = 0;
+    reinject_fl4->fl4_dport = 0;
     
     // Pull mac and network layer headers ready to push new head network layer header
     skb_pull(in_skb, skb_transport_offset(in_skb));
@@ -82,9 +81,7 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; XMIT Packet.\n");
     #endif
     
-    sent = ip_queue_xmit(in_skb->sk, in_skb, reinject_fl4)
-    
-    if(sent<0){
+    if(ip_queue_xmit(in_skb->sk, in_skb, (struct flowi *)reinject_fl4) < 0){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] IN; Error Receiving 4 Packet; DROP.\n");
         #endif

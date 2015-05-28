@@ -290,9 +290,9 @@ struct in_addr * remote_64_xlat(struct in6_addr *remote_6_addr){
     struct host_entry *current_host; // Pointer to current position in XLAT list
     list_for_each_entry(current_host, &xlat_remote, linked_list_data){
         
-        #ifdef VERBOSE_464P2P
-            printk(KERN_INFO "[464P2P] 64X; %p=%x%x%x%x, %p=%x%x%x%x, %p\n", current_host->in6, current_host->in6[0],current_host->in6[1],current_host->in6[2],current_host->in6[3], remote_6_addr, remote_6_addr[0],remote_6_addr[1],remote_6_addr[2],remote_6_addr[3], current_host->linked_list_data.next);
-        #endif
+        //#ifdef VERBOSE_464P2P
+        //    printk(KERN_INFO "[464P2P] 64X; %p=%x%x%x%x, %p=%x%x%x%x, %p\n", current_host->in6, current_host->in6[0],current_host->in6[1],current_host->in6[2],current_host->in6[3], remote_6_addr, remote_6_addr[0],remote_6_addr[1],remote_6_addr[2],remote_6_addr[3], current_host->linked_list_data.next);
+        //#endif
         
         // If match return pointer to corresponding IPv4 address
         if(!memcmp(current_host->in6,remote_6_addr,sizeof(struct in6_addr))){
@@ -313,9 +313,9 @@ struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
     struct host_entry * current_host; // Pointer to current position in XLAT list
     list_for_each_entry(current_host, &xlat_remote, linked_list_data){
         
-        #ifdef VERBOSE_464P2P
-            printk(KERN_INFO "[464P2P] 46X; %p=%x, %p=%x, %p\n", current_host->in4, *(current_host->in4), remote_4_addr, *remote_4_addr, current_host->linked_list_data.next);
-        #endif
+        //#ifdef VERBOSE_464P2P
+        //    printk(KERN_INFO "[464P2P] 46X; %p=%x, %p=%x, %p\n", current_host->in4, *(current_host->in4), remote_4_addr, *remote_4_addr, current_host->linked_list_data.next);
+        //#endif
         
         // If match return pointer to corresponding IPv4 address
         if(!memcmp(current_host->in4,remote_4_addr,sizeof(struct in_addr))){
