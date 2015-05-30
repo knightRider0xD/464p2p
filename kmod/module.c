@@ -135,3 +135,5 @@ void cleanup_module()
     kfree(in6_arg);
     
 } 
+
+MODULE_LICENSE("GPL");
