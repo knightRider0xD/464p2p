@@ -26,11 +26,14 @@ struct flowi6 *reinject_fl6;
 static int outbound_46_flowlabels = 0;
 static struct ipv6_pinfo *flow_pinfo;
 
-void enable_46_flowlabels(){
-    outbound_46_flowlabels = 1;
+void set_46_flowlabels(int enable){
+
     flow_pinfo = kzalloc(sizeof(struct ipv6_pinfo),GFP_KERNEL);
     flow_pinfo->hop_limit = 64;
-    flow_pinfo->autoflowlabel = 1;
+    
+    if(enable){
+        flow_pinfo->autoflowlabel = 1;
+    }
 }
 
 // On NetFilter hook triggered
@@ -99,9 +102,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
         printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; XMIT packet.\n");
     #endif
     
-    if(outbound_46_flowlabels){
-        ((struct inet_sock *)out_skb->sk)->pinet6 = flow_pinfo;
-    }
+    ((struct inet_sock *)out_skb->sk)->pinet6 = flow_pinfo;
 
     if(ip6_xmit(out_skb->sk, out_skb, reinject_fl6,NULL, out4_hdr->tos) < 0){
         #ifdef VERBOSE_464P2P

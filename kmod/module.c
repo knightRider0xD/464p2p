@@ -100,9 +100,8 @@ int init_module() {
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] LOAD; Init 46 & Register Hook.\n");
     #endif
-    if(outboundfl){                 //flowlabel support
-        enable_46_flowlabels();
-    }
+    
+    set_46_flowlabels(outboundfl); //flowlabel support
     
     out_nfho.hook = on_nf_hook_out;                       //function to call when conditions below met
     out_nfho.hooknum = 3; //NF_IP_LOCAL_OUT;            //After IPv4 packet Created and before routing
