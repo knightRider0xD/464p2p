@@ -38,8 +38,8 @@ module_param(v6Addr, charp, 0000);
 MODULE_PARM_DESC(v6Addr, "The IPv6 Address to map");
 
 static int outboundfl = 0;
-module_param(outboundfl, int, 0);
-MODULE_PARM_DESC(outboundfl, "enables outbound IPv6 flow labels");
+//module_param(outboundfl, int, 0);
+//MODULE_PARM_DESC(outboundfl, "enables outbound IPv6 flow labels");
 
 struct in_addr *in4_arg;
 struct in6_addr *in6_arg;
