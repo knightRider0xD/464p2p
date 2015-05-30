@@ -27,17 +27,15 @@ static struct nf_hook_ops out_nfho;
 
 //Module Args
 static char *v4Addr = "000.000.000.000";
-static char *v6Addr = "0000:0000:0000:0000:0000:0000:0000:0000";
-static int outboundfl = 0;
-
-
-MODULE_PARAM(v4Addr, charp, 0000);
+module_param(v4Addr, charp, 0000);
 MODULE_PARM_DESC(v4Addr, "The IPv4 Address to map");
 
-MODULE_PARAM(v6Addr, charp, 0000);
+static char *v6Addr = "0000:0000:0000:0000:0000:0000:0000:0000";
+module_param(v6Addr, charp, 0000);
 MODULE_PARM_DESC(v6Addr, "The IPv6 Address to map");
 
-MODULE_PARAM(outboundfl, int, 0);
+static int outboundfl = 0;
+module_param(outboundfl, int, 0);
 MODULE_PARM_DESC(outboundfl, "enables outbound IPv6 flow labels");
 
 struct in_addr *in4_arg;
