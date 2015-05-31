@@ -23,7 +23,17 @@ struct iphdr *in4_hdr;              //New IPv4 header for inbound packet
 struct in_addr *d_4_addr;
 struct in_addr *s_4_addr;
 
-struct flowi4 *reinject_fl4;
+void init_64_inbound(){
+    
+    // New packet header
+    in4_hdr = kzalloc(sizeof(struct iphdr),GFP_KERNEL);
+    in4_hdr->ihl         = 10; //size of IPv6 Header
+    in4_hdr->version     = 4;
+    //in4_hdr->check       = 0; // Ignore checksum; should have already passed checksum
+    //in4_hdr->id          = 0; // Ignore packet ID; packet is unfragmented
+    //in4_hdr->frag_off    = 0; // Ignore fragmentation offset & flags packet is unfragmented
+    
+}
 
 // On NetFilter hook triggered
 unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
@@ -66,22 +76,31 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         return NF_DROP;
     }
     
-    //Prep new v4 Header info
-    reinject_fl4 = kzalloc(sizeof(struct flowi4),GFP_KERNEL);
-    reinject_fl4->daddr = d_4_addr->s_addr;
-    reinject_fl4->saddr = s_4_addr->s_addr;
-    reinject_fl4->flowi4_proto = in6_hdr->nexthdr;
-    reinject_fl4->flowi4_tos = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
-    reinject_fl4->fl4_dport = 0;
+    // Collate new v4 header values
+    in4_hdr->tot_len           = sizeof(struct iphdr)+in6_hdr->payload_len; // total length = header size (40 bytes + v6 payload size)
+    in4_hdr->protocol          = in6_hdr->nexthdr;
+    in4_hdr->daddr             = d_4_addr->s_addr;
+    in4_hdr->saddr             = s_4_addr->s_addr;
+    in4_hdr->ttl               = in6_hdr->hop_limit;
+    in4_hdr->tos               = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
     
     // Pull mac and network layer headers ready to push new head network layer header
     skb_pull(in_skb, skb_transport_offset(in_skb));
     
+    // Push space for new IPv4 header
+    skb_push(in_skb, sizeof(struct iphdr));
+    // Reset header positions
+    skb_reset_network_header(in_skb);
+    //skb_reset_mac_header(in_skb);
+    
+    // Write new v4 header data
+    memcpy(skb_network_header(in_skb),in4_hdr, sizeof(struct iphdr));
+    
     #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; XMIT Packet.\n");
+        printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Dispatch Packet.\n");
     #endif
     
-    if(ip_queue_xmit(in_skb->sk, in_skb, (struct flowi *)reinject_fl4) < 0){
+    if(ip_local_out(in_skb) < 0){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] IN; Error Receiving 4 Packet; DROP.\n");
         #endif
@@ -89,7 +108,7 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     }
 
     #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] IN; 4 Packet XMIT OK, 6 Packet STOLEN.\n");
+        printk(KERN_INFO "[464P2P] IN; 4 Packet XMIT OK, Mark 6 Packet STOLEN.\n");
     #endif
     
     return NF_STOLEN;

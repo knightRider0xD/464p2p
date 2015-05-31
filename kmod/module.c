@@ -98,7 +98,7 @@ int init_module() {
         printk(KERN_INFO "[464P2P] LOAD; Init 46 & Register Hook.\n");
     #endif
     
-    set_46_flowlabels(outboundfl); //flowlabel support
+    init_46_outbound(outboundfl); //init & set flowlabel support
     
     out_nfho.hook = on_nf_hook_out;                       //function to call when conditions below met
     out_nfho.hooknum = 3; //NF_IP_LOCAL_OUT;            //After IPv4 packet Created and before routing

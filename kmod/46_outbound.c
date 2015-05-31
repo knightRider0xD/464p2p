@@ -21,19 +21,18 @@ struct ipv6hdr *out6_hdr;             //IP header of inbound packet;
 struct in6_addr *s_6_addr;
 struct in6_addr *d_6_addr;
 
-struct flowi6 *reinject_fl6;
-
 static int outbound_46_flowlabels = 0;
-static struct ipv6_pinfo *flow_pinfo;
 
-void set_46_flowlabels(int enable){
+void init_46_outbound(int enable_46_flowlabels){
 
-    flow_pinfo = kzalloc(sizeof(struct ipv6_pinfo),GFP_KERNEL);
-    flow_pinfo->hop_limit = 64;
-    
-    if(enable){
-        flow_pinfo->autoflowlabel = 1;
+    if(enable_46_flowlabels){
+        outbound_46_flowlabels = 1;
     }
+    
+    // New packet header
+    out6_hdr = kzalloc(sizeof(struct iphdr),GFP_KERNEL);
+    out6_hdr->version     = 6;
+    
 }
 
 // On NetFilter hook triggered
@@ -74,16 +73,14 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
         return NF_DROP;
     }
     
-    //Prep new v6 Header info
-    reinject_fl6 = kzalloc(sizeof(struct flowi6),GFP_KERNEL);
-    reinject_fl6->daddr = *d_6_addr;
-    reinject_fl6->saddr = *s_6_addr;
-    reinject_fl6->flowi6_proto = out4_hdr->protocol;
-    reinject_fl6->flowi6_tos = (out4_hdr->tos>>4);
-    reinject_fl6->flowlabel = 0;
-    reinject_fl6->fl6_dport = 0;
-    
-    printk("inet sock: %lu, my sock: %lu", (unsigned long)sizeof(struct inet_sock),(unsigned long)sizeof(*out_skb->sk));
+    // Collate new v6 header values
+    out6_hdr->payload_len      = out4_hdr->tot_len-sizeof(struct iphdr); // payload length = total length - header size
+    out6_hdr->nexthdr          = out4_hdr->protocol;
+    out6_hdr->saddr            = *s_6_addr;
+    out6_hdr->daddr            = *d_6_addr;
+    out6_hdr->hop_limit        = out4_hdr->ttl;
+    out6_hdr->priority         = (out4_hdr->tos>>4);
+    out6_hdr->flow_lbl[0]      = ((out4_hdr->tos&15)<<4) + ip6_make_flowlabel(sock_net(out_skb->sk), out_skb, 0,outbound_46_flowlabels); //current flow label value (does not exist)
     
     //printk(KERN_INFO "[464P2P] OUT; mac size:%d;net size:%d.\n",skb_network_header(out_skb)-skb_mac_header(out_skb), skb_network_header_len(out_skb));
     
@@ -99,18 +96,25 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
         pskb_expand_head(out_skb, sizeof(struct ipv6hdr)-skb_headroom(out_skb), 0,GFP_ATOMIC);
     }
     
+    // Push space for new IPv6 header
+    skb_push(out_skb, sizeof(struct ipv6hdr));
+    // Realign header positions
+    skb_reset_network_header(out_skb);
+    // skb_reset_mac_header(out_skb);
+    
+    // Write new v6 header data
+    memcpy(skb_network_header(out_skb),out6_hdr, sizeof(struct ipv6hdr));
+    
     #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; XMIT packet.\n");
+        printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Dispatch packet.\n");
     #endif
     
-    /*((struct inet_sock *)out_skb->sk)->pinet6 = flow_pinfo;
-
-    if(ip6_xmit(out_skb->sk, out_skb, reinject_fl6,NULL, out4_hdr->tos) < 0){
+    if(ip6_local_out(out_skb) < 0){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] OUT; Error Sending 6 Packet; DROP.\n");
         #endif
         return NF_DROP;
-    }*/
+    }
     
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] OUT; 6 Packet XMIT OK, Mark 4 Packet STOLEN.\n");
