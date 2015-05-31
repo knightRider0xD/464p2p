@@ -103,7 +103,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
         printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; XMIT packet.\n");
     #endif
     
-    ((struct inet_sock *)out_skb->sk)->pinet6 = flow_pinfo;
+    //((struct inet_sock *)out_skb->sk)->pinet6 = flow_pinfo;
 
     if(ip6_xmit(out_skb->sk, out_skb, reinject_fl6,NULL, out4_hdr->tos) < 0){
         #ifdef VERBOSE_464P2P
