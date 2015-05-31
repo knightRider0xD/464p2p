@@ -83,6 +83,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     reinject_fl6->flowlabel = 0;
     reinject_fl6->fl6_dport = 0;
     
+    printk("sock: %lu, inet_sock: %lu", (unsigned long)sizeof(struct inet_sock),(unsigned long)sizeof(*out_skb->sk))
     
     //printk(KERN_INFO "[464P2P] OUT; mac size:%d;net size:%d.\n",skb_network_header(out_skb)-skb_mac_header(out_skb), skb_network_header_len(out_skb));
     
