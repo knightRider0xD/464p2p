@@ -20,6 +20,7 @@ struct ipv6hdr *out6_hdr;             //IP header of inbound packet;
 
 struct in6_addr *s_6_addr;
 struct in6_addr *d_6_addr;
+struct flowi6 fl6;
 
 static int outbound_46_flowlabels = 0;
 
@@ -82,6 +83,11 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     out6_hdr->priority         = (out4_hdr->tos>>4);
     out6_hdr->flow_lbl[0]      = ((out4_hdr->tos&15)<<4) + ip6_make_flowlabel(sock_net(out_skb->sk), out_skb, 0,outbound_46_flowlabels); //current flow label value (does not exist)
     
+    fl6 = {
+        .saddr = *s_6_addr,
+        .daddr = *d_6_addr,
+    };
+    
     //printk(KERN_INFO "[464P2P] OUT; mac size:%d;net size:%d.\n",skb_network_header(out_skb)-skb_mac_header(out_skb), skb_network_header_len(out_skb));
     
     // Pull mac and network layer headers ready to push new head network layer headerRemove IPv6 header
@@ -108,6 +114,10 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Dispatch packet.\n");
     #endif
+        
+        
+    skb_dst_set(out_skb, &(ip_route_output_key(struct net *net, struct flowi4 *flp)->dst))
+    rtable *ip_route_output_key(struct net *net, struct flowi4 *flp)->dst
     
     if(ip6_local_out(out_skb) < 0){
         #ifdef VERBOSE_464P2P
