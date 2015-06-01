@@ -7,6 +7,8 @@
 #include <linux/skbuff.h> 
 #include <linux/ipv6.h>
 #include <net/ipv6.h>
+#include <net/ip6_route.h>
+#include <net/net_namespace.h>
 #include <net/netfilter/nf_queue.h>
 
 #include "46_outbound.h"
@@ -83,7 +85,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     out6_hdr->priority         = (out4_hdr->tos>>4);
     out6_hdr->flow_lbl[0]      = ((out4_hdr->tos&15)<<4) + ip6_make_flowlabel(sock_net(out_skb->sk), out_skb, 0,outbound_46_flowlabels); //current flow label value (does not exist)
     
-    fl6 = {
+    struct flowi6 fl6 = {
         .saddr = *s_6_addr,
         .daddr = *d_6_addr,
     };
@@ -114,10 +116,8 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Dispatch packet.\n");
     #endif
-        
-        
-    skb_dst_set(out_skb, &(ip_route_output_key(struct net *net, struct flowi4 *flp)->dst))
-    rtable *ip_route_output_key(struct net *net, struct flowi4 *flp)->dst
+    
+    skb_dst_set(out_skb, ip6_route_output(&init_net, NULL, &fl6));
     
     if(ip6_local_out(out_skb) < 0){
         #ifdef VERBOSE_464P2P

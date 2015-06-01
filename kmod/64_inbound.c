@@ -7,8 +7,8 @@
 #include <linux/ipv6.h>
 #include <linux/skbuff.h>
 #include <linux/string.h>
-
 #include <net/ip.h>
+#include <net/net_namespace.h>
 #include <net/netfilter/nf_queue.h>
 
 #include "64_inbound.h"
@@ -22,6 +22,7 @@ struct iphdr *in4_hdr;              //New IPv4 header for inbound packet
 
 struct in_addr *d_4_addr;
 struct in_addr *s_4_addr;
+struct flowi4 fl4;
 
 void init_64_inbound(){
     
@@ -84,6 +85,11 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     in4_hdr->ttl               = in6_hdr->hop_limit;
     in4_hdr->tos               = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
     
+    struct flowi4 fl4 = {
+        .saddr = s_4_addr->s_addr,
+        .daddr = d_4_addr->s_addr,
+    };
+    
     // Pull mac and network layer headers ready to push new head network layer header
     skb_pull(in_skb, skb_transport_offset(in_skb));
     
@@ -100,6 +106,8 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Dispatch Packet.\n");
     #endif
     
+    skb_dst_set(in_skb, ip_route_output_key(&init_net, &fl4));
+        
     if(ip_local_out(in_skb) < 0){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] IN; Error Receiving 4 Packet; DROP.\n");
