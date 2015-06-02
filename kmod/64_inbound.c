@@ -106,6 +106,8 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Dispatch Packet.\n");
     #endif
     
+    skb_scrub_packet(in_skb, 1); //scrub old connection information
+        
     skb_dst_set(in_skb, ip_route_output_key(&init_net, &fl4));
         
     if(ip_local_out(in_skb) < 0){
