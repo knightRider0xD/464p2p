@@ -33,7 +33,7 @@ void init_46_outbound(int enable_46_flowlabels){
     }
     
     // New packet header
-    out6_hdr = kzalloc(sizeof(struct iphdr),GFP_ATOMIC);
+    out6_hdr = kzalloc(sizeof(struct iphdr),GFP_KERNEL);
     out6_hdr->version     = 6;
     
 }

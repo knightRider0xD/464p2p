@@ -73,7 +73,7 @@ int xlat_add(char xlat_str[]){
     
     strncpy(addr_6,xlat_str,39);
     
-    in6 = kzalloc(sizeof(struct in6_addr),GFP_ATOMIC);
+    in6 = kzalloc(sizeof(struct in6_addr),GFP_KERNEL);
     
     if(in6_pton(addr_6,in6)!=0){
         kfree(in6);
@@ -83,7 +83,7 @@ int xlat_add(char xlat_str[]){
     
     strncpy(addr_4,xlat_str+40,15);
     
-    in4 = kzalloc(sizeof(struct in_addr),GFP_ATOMIC);
+    in4 = kzalloc(sizeof(struct in_addr),GFP_KERNEL);
     
     if(in4_pton(addr_4,in4)!=0){
         kfree(in6);
@@ -164,7 +164,7 @@ int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_add
     hash_add(xlat_64, &new_entry_64.hash_list_data, *new_entry_64.in6);
     */
     
-    struct host_entry *new_entry = kzalloc(sizeof(struct host_entry),GFP_ATOMIC);
+    struct host_entry *new_entry = kzalloc(sizeof(struct host_entry),GFP_KERNEL);
     new_entry->in6 = remote_6_addr;
     new_entry->in4 = remote_4_addr;
     INIT_LIST_HEAD(&new_entry->linked_list_data);
@@ -181,7 +181,7 @@ int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_add
  */
 int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr){
     
-    struct host_entry *new_entry = kzalloc(sizeof(struct host_entry),GFP_ATOMIC);
+    struct host_entry *new_entry = kzalloc(sizeof(struct host_entry),GFP_KERNEL);
     new_entry->in6 = local_6_addr;
     new_entry->in4 = local_4_addr;
     INIT_LIST_HEAD(&new_entry->linked_list_data);

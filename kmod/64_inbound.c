@@ -27,7 +27,7 @@ struct flowi4 fl4;
 void init_64_inbound(){
     
     // New packet header
-    in4_hdr = kzalloc(sizeof(struct iphdr),GFP_ATOMIC);
+    in4_hdr = kzalloc(sizeof(struct iphdr),GFP_KERNEL);
     in4_hdr->ihl         = 10; //size of IPv6 Header
     in4_hdr->version     = 4;
     //in4_hdr->check       = 0; // Ignore checksum; should have already passed checksum
