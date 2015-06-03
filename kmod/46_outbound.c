@@ -131,6 +131,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
         printk(KERN_INFO "[464P2P] OUT; 6 Packet XMIT OK, Mark 4 Packet STOLEN.\n");
     #endif
     
-    return NF_DROP;
+    kfree_skb(skb);
+    return NF_STOLEN;
     
 }
