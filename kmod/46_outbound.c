@@ -42,13 +42,11 @@ void init_46_outbound(int enable_46_flowlabels){
 unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)){
     
     
-    out_skb = skb;
-    
-    if(!out_skb){
+    if(!skb){
         return NF_ACCEPT;
     }
     
-    out4_hdr = ip_hdr(out_skb);
+    out4_hdr = ip_hdr(skb);
 
     // XLAT v4 local address
     s_6_addr = local_46_xlat((struct in_addr*) &(out4_hdr->saddr));
@@ -90,6 +88,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
         .daddr = *d_6_addr,
     };
     
+    out_skb = skb_clone(skb, GFP_ATOMIC);
     //printk(KERN_INFO "[464P2P] OUT; mac size:%d;net size:%d.\n",skb_network_header(out_skb)-skb_mac_header(out_skb), skb_network_header_len(out_skb));
     
     // Pull mac and network layer headers ready to push new head network layer headerRemove IPv6 header
