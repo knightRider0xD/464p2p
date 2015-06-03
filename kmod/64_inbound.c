@@ -22,6 +22,7 @@ struct iphdr *in4_hdr;              //New IPv4 header for inbound packet
 
 struct in_addr *d_4_addr;
 struct in_addr *s_4_addr;
+struct net_device *in6_netdev;
 struct flowi4 fl4;
 
 void init_64_inbound(){
@@ -48,7 +49,9 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     in6_hdr = ipv6_hdr(skb);
 
     // XLAT v6 local address. NULL if not listed
-    d_4_addr = local_64_xlat(&in6_hdr->daddr);
+    struct host_entry *in_host = local_64_xlat(&in6_hdr->daddr);
+    d_4_addr = in_host->in4;
+    in6_netdev = in_host->dev;
     
     // If packet dest address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
     if (d_4_addr == NULL){
@@ -103,11 +106,12 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Dispatch Packet.\n");
     #endif
     
-    skb_scrub_packet(in_skb, 1); //scrub old connection information
         
-    skb_dst_set(in_skb, ip_route_output_key(&init_net, &fl4));
+    //skb_dst_set(in_skb, ip_route_output_key(&init_net, &fl4));
+      
+    in_skb->dev = in6_netdev;
         
-    if(ip_local_out(in_skb) < 0){
+    if(dev_queue_xmit(in_skb) < 0){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] IN; Error Receiving 4 Packet; DROP.\n");
         #endif
@@ -120,5 +124,6 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         printk(KERN_INFO "[464P2P] IN; 4 Packet XMIT OK, DROP 6 Packet.\n");
     #endif
     
-    return NF_DROP;
+    kfree_skb(skb);
+    return NF_STOLEN;
 }

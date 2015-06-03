@@ -179,11 +179,12 @@ int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_add
 /**
  * Function to add entry to the local xlat table
  */
-int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr){
+int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr, struct net_device *dev){
     
     struct host_entry *new_entry = kzalloc(sizeof(struct host_entry),GFP_ATOMIC);
     new_entry->in6 = local_6_addr;
     new_entry->in4 = local_4_addr;
+    new_entry->dev = dev;
     INIT_LIST_HEAD(&new_entry->linked_list_data);
     
     list_add(&new_entry->linked_list_data,&xlat_local);
@@ -201,7 +202,7 @@ int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr){
 /**
  * Function to translate local IPv6 Address to its local IPv4 address
  */
-struct in_addr * local_64_xlat(struct in6_addr *local_6_addr){
+struct host_entry * local_64_xlat(struct in6_addr *local_6_addr){
     
     //list lookup
     struct host_entry *current_host; // Pointer to current position in XLAT list
@@ -210,7 +211,7 @@ struct in_addr * local_64_xlat(struct in6_addr *local_6_addr){
         // If match return pointer to corresponding IPv4 address
         if(!memcmp(current_host->in6,local_6_addr,sizeof(struct in6_addr))){
             //TODO Move to head
-            return current_host->in4;
+            return current_host;
         }
     }
     
@@ -220,7 +221,7 @@ struct in_addr * local_64_xlat(struct in6_addr *local_6_addr){
 /**
  * Function to translate local IPv6 Address to its local IPv4 address
  */
-struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
+struct host_entry * local_46_xlat(struct in_addr *local_4_addr){
     //list lookup
     struct host_entry *current_host; // Pointer to current position in XLAT list
     list_for_each_entry(current_host, &xlat_local, linked_list_data){
@@ -232,7 +233,7 @@ struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
         // If match return pointer to corresponding IPv4 address
         if(!memcmp(current_host->in4,local_4_addr,sizeof(struct in_addr))){
             //TODO Move to head
-            return current_host->in6;
+            return current_host;
         }
     }
     

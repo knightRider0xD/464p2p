@@ -23,6 +23,7 @@ struct ipv6hdr *out6_hdr;             //IP header of inbound packet;
 
 struct in6_addr *s_6_addr;
 struct in6_addr *d_6_addr;
+struct net_device *out6_netdev;
 struct flowi6 fl6;
 
 static int outbound_46_flowlabels = 0;
@@ -52,7 +53,9 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     out4_hdr = ip_hdr(skb);
 
     // XLAT v4 local address
-    s_6_addr = local_46_xlat((struct in_addr*) &(out4_hdr->saddr));
+    struct host_entry *out_host = local_46_xlat((struct in_addr*) &(out4_hdr->saddr));
+    s_6_addr = out_host->in6;
+    out6_netdev = out_host->dev;
 
     // If packet src address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
     if (s_6_addr == NULL){
@@ -111,9 +114,11 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     
     //skb_scrub_packet(out_skb, 1); //scrub old connection information
         
-    skb_dst_set(out_skb, ip6_route_output(&init_net, NULL, &fl6));
+    //skb_dst_set(out_skb, ip6_route_output(&init_net, NULL, &fl6));
     
-    if(ip6_local_out(out_skb) < 0){
+    out_skb->dev = out6_netdev;
+        
+    if(dev_queue_xmit(out_skb) < 0){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] OUT; Error Sending 6 Packet; DROP.\n");
         #endif
