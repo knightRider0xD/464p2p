@@ -98,7 +98,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     out6_hdr->daddr            = *d_6_addr;
     out6_hdr->hop_limit        = out4_hdr->ttl;
     out6_hdr->priority         = (out4_hdr->tos>>4);
-    out6_hdr->flow_lbl[0]      = ((out4_hdr->tos&15)<<4) + ip6_make_flowlabel(sock_net(out_skb->sk), out_skb, 0,outbound_46_flowlabels); //current flow label value (does not exist)
+    out6_hdr->flow_lbl[0]      = ((out4_hdr->tos&15)<<4);// + ip6_make_flowlabel(sock_net(out_skb->sk), out_skb, 0,outbound_46_flowlabels); //current flow label value (does not exist)
     printk(KERN_INFO "[464P2P] 5");
     struct flowi6 fl6 = {
         .saddr = *s_6_addr,
