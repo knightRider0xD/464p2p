@@ -121,5 +121,5 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         printk(KERN_INFO "[464P2P] IN; 4 Packet XMIT OK, Mark 6 Packet STOLEN.\n");
     #endif
     
-    return NF_STOLEN;
+    return NF_DROP;
 }
