@@ -109,9 +109,9 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
         printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Dispatch packet.\n");
     #endif
     
-    //skb_scrub_packet(out_skb, 1); //scrub old connection information
-        
-    skb_dst_set(out_skb, ip6_route_output(&init_net, NULL, &fl6));
+    struct dst_entry *out_dst = ip6_route_output(&init_net, NULL, &fl6);
+    skb_dst_set(out_skb, out_dst);
+    out_skb->dev = out_dst->dev;
     
     if(ip6_local_out(out_skb) < 0){
         #ifdef VERBOSE_464P2P
