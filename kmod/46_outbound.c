@@ -118,7 +118,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     
     out_skb->dev = out6_netdev;
         
-    if(dev_queue_xmit(out_skb) < 0){
+    if(ip6_local_out(out_skb) < 0){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] OUT; Error Sending 6 Packet; DROP.\n");
         #endif

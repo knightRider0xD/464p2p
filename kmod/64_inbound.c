@@ -111,7 +111,7 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
       
     in_skb->dev = in6_netdev;
         
-    if(dev_queue_xmit(in_skb) < 0){
+    if(ip_local_out(in_skb) < 0){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] IN; Error Receiving 4 Packet; DROP.\n");
         #endif
