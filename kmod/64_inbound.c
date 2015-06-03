@@ -38,12 +38,18 @@ void init_64_inbound(){
 
 // On NetFilter hook triggered
 unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
+  
+    //#ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] IN; New Packet.\n");
+    //#endif
     
-    if(!skb){
+    in_skb = skb;
+    
+    if(!in_skb){
         return NF_ACCEPT;
     }
     
-    in6_hdr = ipv6_hdr(skb);
+    in6_hdr = ipv6_hdr(in_skb);
 
     // XLAT v6 local address. NULL if not listed
     d_4_addr = local_64_xlat(&in6_hdr->daddr);
@@ -84,8 +90,6 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         .daddr = d_4_addr->s_addr,
     };
     
-    in_skb = skb_clone(skb, GFP_ATOMIC);
-    
     // Pull mac and network layer headers ready to push new head network layer header
     skb_pull(in_skb, skb_transport_offset(in_skb));
     
@@ -117,6 +121,5 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         printk(KERN_INFO "[464P2P] IN; 4 Packet XMIT OK, Mark 6 Packet STOLEN.\n");
     #endif
     
-    kfree_skb(skb);
     return NF_STOLEN;
 }
