@@ -78,18 +78,15 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     }
     
     //printk(KERN_INFO "[464P2P] OUT; mac size:%d;net size:%d.\n",skb_network_header(out_skb)-skb_mac_header(out_skb), skb_network_header_len(out_skb));
-    printk(KERN_INFO "[464P2P] 1");
     // Pull mac and network layer headers ready to push new head network layer headerRemove IPv6 header
     skb_pull(skb, skb_transport_offset(skb));
     skb_reset_network_header(skb);
-    printk(KERN_INFO "[464P2P] 2");
+    
     // Expand & Push space for new IPv6 header
     out_skb = skb_copy_expand(skb, MAX_IP_HDR_LEN, skb_tailroom(skb),GFP_ATOMIC);
     skb_push(out_skb, sizeof(struct ipv6hdr));
     skb_reset_network_header(out_skb);
-    printk(KERN_INFO "[464P2P] 3");
     out6_hdr = ipv6_hdr(out_skb);
-    printk(KERN_INFO "[464P2P] 4");
     // Write new v6 header data
     out6_hdr->version          = 6;
     out6_hdr->payload_len      = out4_hdr->tot_len-sizeof(struct iphdr); // payload length = total length - header size
@@ -99,7 +96,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     out6_hdr->hop_limit        = out4_hdr->ttl;
     out6_hdr->priority         = (out4_hdr->tos>>4);
     out6_hdr->flow_lbl[0]      = ((out4_hdr->tos&15)<<4);// + ip6_make_flowlabel(sock_net(skb->sk), skb, 0,outbound_46_flowlabels); //current flow label value (does not exist)
-    printk(KERN_INFO "[464P2P] 5");
+    
     struct flowi6 fl6 = {
         .saddr = *s_6_addr,
         .daddr = *d_6_addr,
