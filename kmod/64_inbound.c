@@ -22,7 +22,6 @@ struct iphdr *in4_hdr;              //New IPv4 header for inbound packet
 
 struct in_addr *d_4_addr;
 struct in_addr *s_4_addr;
-struct net_device *in6_netdev;
 struct flowi4 fl4;
 
 void init_64_inbound(){
@@ -49,9 +48,7 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     in6_hdr = ipv6_hdr(skb);
 
     // XLAT v6 local address. NULL if not listed
-    struct host_entry *in_host = local_64_xlat(&in6_hdr->daddr);
-    d_4_addr = in_host->in4;
-    in6_netdev = in_host->dev;
+    d_4_addr = local_64_xlat(&in6_hdr->daddr);
     
     // If packet dest address isn't a 464p2p address, ignore packet, ACCEPT for regular processing.
     if (d_4_addr == NULL){
@@ -105,11 +102,8 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Dispatch Packet.\n");
     #endif
-    
         
-    //skb_dst_set(in_skb, ip_route_output_key(&init_net, &fl4));
-      
-    in_skb->dev = in6_netdev;
+    skb_dst_set(in_skb, ip_route_output_key(&init_net, &fl4));
         
     if(ip_local_out(in_skb) < 0){
         #ifdef VERBOSE_464P2P

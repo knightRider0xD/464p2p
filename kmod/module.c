@@ -7,7 +7,6 @@
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv6.h>
 #include <linux/netfilter_ipv4.h>
-#include <linux/netdevice.h>
 #include <linux/string.h>
 #include <linux/delay.h>
 
@@ -35,17 +34,12 @@ static char *v6Addr = "0000:0000:0000:0000:0000:0000:0000:0000";
 module_param(v6Addr, charp, 0000);
 MODULE_PARM_DESC(v6Addr, "The IPv6 Address to map");
 
-static char *dev = "eth0";
-module_param(dev, charp, 0000);
-MODULE_PARM_DESC(dev, "The Name of the network device to attach to");
-
 static int outboundfl = 0;
 module_param(outboundfl, int, 0);
 MODULE_PARM_DESC(outboundfl, "enables outbound IPv6 flow labels");
 
 struct in_addr *in4_arg;
 struct in6_addr *in6_arg;
-struct net_device *netdev;
 int static_table_status;
 
 //On load using 'insmod'
@@ -54,14 +48,6 @@ int init_module() {
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] LOAD; Initialising.\n");
         #endif
-            
-    netdev = dev_get_by_name(&init_net, dev);
-    if(netdev==NULL){
-        #ifdef VERBOSE_464P2P
-            printk(KERN_INFO "[464P2P] LOAD; Invalid Device Supplied. Unloading.\n");
-        #endif
-        return -1;
-    }
     
     in4_arg = kzalloc(sizeof(struct in_addr), GFP_ATOMIC);
     if(in4_pton(v4Addr,in4_arg)!=0){
@@ -86,7 +72,7 @@ int init_module() {
         printk(KERN_INFO "[464P2P] LOAD; Initialise 464_tables & Add local addresses.\n");
     #endif
     init_tables();
-    local_xlat_add(in6_arg,in4_arg,netdev);
+    local_xlat_add(in6_arg,in4_arg);
     
     // Load initial static entries to table
     #ifdef VERBOSE_464P2P
