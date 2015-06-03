@@ -27,9 +27,9 @@ struct flowi4 fl4;
 void init_64_inbound(){
     
     // New packet header
-    in4_hdr = kzalloc(sizeof(struct iphdr),GFP_ATOMIC);
-    in4_hdr->ihl         = 10; //size of IPv6 Header
-    in4_hdr->version     = 4;
+    //in4_hdr = kzalloc(sizeof(struct iphdr),GFP_ATOMIC);
+    //in4_hdr->ihl         = 10; //size of IPv6 Header
+    //in4_hdr->version     = 4;
     //in4_hdr->check       = 0; // Ignore checksum; should have already passed checksum
     //in4_hdr->id          = 0; // Ignore packet ID; packet is unfragmented
     //in4_hdr->frag_off    = 0; // Ignore fragmentation offset & flags packet is unfragmented
@@ -38,18 +38,14 @@ void init_64_inbound(){
 
 // On NetFilter hook triggered
 unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
-  
-    //#ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] IN; New Packet.\n");
-    //#endif
     
-    in_skb = skb;
+    //in_skb = skb;
     
-    if(!in_skb){
+    if(!skb){
         return NF_ACCEPT;
     }
     
-    in6_hdr = ipv6_hdr(in_skb);
+    in6_hdr = ipv6_hdr(skb);
 
     // XLAT v6 local address. NULL if not listed
     d_4_addr = local_64_xlat(&in6_hdr->daddr);
@@ -77,7 +73,19 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         return NF_DROP;
     }
     
-    // Collate new v4 header values
+    // Pull mac and network layer headers ready to push new head network layer header
+    skb_pull(in_skb, skb_transport_offset(skb));    
+    // Reset header positions
+    skb_reset_network_header(skb);
+    
+    // Copy & Push space for new IPv6 header
+    in_skb = skb_copy(skb,GFP_ATOMIC);
+    skb_push(in_skb, sizeof(struct iphdr));
+    skb_reset_network_header(in_skb);
+    
+    // Write new v4 header data
+    in4_hdr->ihl               = 10; //size of IPv4 Header
+    in4_hdr->version           = 4;
     in4_hdr->tot_len           = sizeof(struct iphdr)+in6_hdr->payload_len; // total length = header size (40 bytes + v6 payload size)
     in4_hdr->protocol          = in6_hdr->nexthdr;
     in4_hdr->daddr             = d_4_addr->s_addr;
@@ -90,17 +98,6 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         .daddr = d_4_addr->s_addr,
     };
     
-    // Pull mac and network layer headers ready to push new head network layer header
-    skb_pull(in_skb, skb_transport_offset(in_skb));
-    
-    // Push space for new IPv4 header
-    skb_push(in_skb, sizeof(struct iphdr));
-    // Reset header positions
-    skb_reset_network_header(in_skb);
-    //skb_reset_mac_header(in_skb);
-    
-    // Write new v4 header data
-    memcpy(skb_network_header(in_skb),in4_hdr, sizeof(struct iphdr));
     
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Dispatch Packet.\n");
@@ -116,10 +113,12 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         #endif
         return NF_DROP;
     }
+    
+    
 
     #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] IN; 4 Packet XMIT OK, Mark 6 Packet STOLEN.\n");
+        printk(KERN_INFO "[464P2P] IN; 4 Packet XMIT OK, DROP 6 Packet.\n");
     #endif
     
-    return NF_STOLEN;
+    return NF_DROP;
 }
