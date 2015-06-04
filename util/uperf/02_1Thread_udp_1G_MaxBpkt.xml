@@ -5,7 +5,7 @@
             <flowop type="accept" options="remotehost=$h protocol=udp
 	    wndsz=40k tcp_nodelay"/>
         </transaction>
-        <transaction iterations="675676">
+        <transaction iterations="300000">
             <flowop type="read" options="size=1480"/>
         </transaction>
         <transaction iterations="675676">
