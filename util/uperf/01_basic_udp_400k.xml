@@ -6,8 +6,8 @@
 	    wndsz=400k tcp_nodelay"/>
         </transaction>
         <transaction duration="30s">
-            <flowop type="write" options="size=5000k"/>
-            <flowop type="read" options="size=5000k"/>
+            <flowop type="write" options="size=400k"/>
+            <flowop type="read" options="size=400k"/>
         </transaction>
         <transaction iterations="1">
             <flowop type="disconnect" />
