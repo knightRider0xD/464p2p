@@ -3,7 +3,7 @@
   <group nthreads="1">
         <transaction iterations="1">
             <flowop type="accept" options="remotehost=$h protocol=udp
-	    wndsz=2000000k tcp_nodelay"/>
+	    wndsz=400k tcp_nodelay"/>
         </transaction>
         <transaction duration="30s">
             <flowop type="write" options="size=5000k"/>
