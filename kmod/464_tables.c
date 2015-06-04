@@ -411,7 +411,7 @@ int in6_pton(char *str, struct in6_addr *target_addr){
         if (lval<0){ // if did not convert, set byte to 0
             lval=0;
         }
-        target_addr->s6_addr[16-(2*pton_i)] = (char) lval; // Copy byte to dest struct.
+        target_addr->s6_addr[15-(2*pton_i)] = (char) lval; // Copy byte to dest struct.
 
         // repeat for bottom 2 bytes of group
         strncpy(buf,&str[2+(5*pton_i)],2);
@@ -419,7 +419,7 @@ int in6_pton(char *str, struct in6_addr *target_addr){
         if (lval<0){
             lval=0;
         }
-        target_addr->s6_addr[16-(2*pton_i)+1] = (char) lval;
+        target_addr->s6_addr[15-(2*pton_i)+1] = (char) lval;
 
     }    
 
