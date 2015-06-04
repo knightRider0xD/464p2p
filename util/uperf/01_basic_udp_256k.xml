@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
 <profile name="basic_udp_5M">
-  <group nthreads="2">
+  <group nthreads="1">
         <transaction iterations="1">
             <flowop type="accept" options="remotehost=$h protocol=udp
 	    wndsz=100k tcp_nodelay"/>
         </transaction>
         <transaction duration="30s">
-            <flowop type="write" options="size=1000"/>
             <flowop type="read" options="size=1000"/>
         </transaction>
         <transaction iterations="1">
