@@ -14,8 +14,8 @@ fi
 echo "clat-v4-addr=192.0.0.$2
 clat-v6-addr=fd16:6db2:c925:0:2544:67fa:9e35:$2
 plat-dev=$3
-plat-prefix= IPV6prefix (default: auto-detect)
-tayga-v4-addr (default: 192.0.0.2)
+plat-prefix=fd16:6db2:c926::/56
+tayga-v4-addr=192.0.1.$2
 v4-conncheck-enable=no" > clatd.conf
 
 ./clatd -c clatd.conf
