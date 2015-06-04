@@ -7,7 +7,6 @@
         </transaction>
         <transaction iterations="1864136">
             <flowop type="write" options="size=576"/>
-            <flowop type="read" options="size=576"/>
         </transaction>
         <transaction iterations="1">
             <flowop type="disconnect" />
