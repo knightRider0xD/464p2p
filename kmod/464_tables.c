@@ -4,6 +4,7 @@
 #include <linux/list.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
+#include <linux/inet.h>
 
 /*
  * Included in 464_tables.h
@@ -30,13 +31,6 @@ struct in6_addr *in6;
 
 char addr_4[16];
 char addr_6[40];
-
-// setup pton buffers
-char buf[4];
-long lval;
-uint32_t wrk;
-int pton_i;
-
 
 
 //DECLARE_HASHTABLE(xlat_46, 16);
@@ -71,11 +65,13 @@ int cleanup_tables()
  */
 int xlat_add(char xlat_str[]){
     
+    const char *end;
+    
     strncpy(addr_6,xlat_str,39);
     
     in6 = kzalloc(sizeof(struct in6_addr),GFP_ATOMIC);
     
-    if(in6_pton(addr_6,in6)!=0){
+    if(in6_pton(&addr_6,-1,in6,-1,end)!=1){
         kfree(in6);
         return -1;
     }
@@ -85,7 +81,7 @@ int xlat_add(char xlat_str[]){
     
     in4 = kzalloc(sizeof(struct in_addr),GFP_ATOMIC);
     
-    if(in4_pton(addr_4,in4)!=0){
+    if(in4_pton(&addr_4,-1,in4,-1,end)!=1){
         kfree(in6);
         kfree(in4);
         return -2;
@@ -325,103 +321,4 @@ struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
     }
     
     return NULL;  //No match found
-}
-
-
-/********************************
- * pton Functions
- ********************************/
-
-
-/**
- * Function to convert dotted decimal IPv4 address string to in_addr structure
- */
-int in4_pton(char *str, struct in_addr *target_addr){
-    
-    //Test for proper addr len
-    if(strlen(str)!=15){
-        return 1;  //Unable to convert
-    }
-    
-    // setup buffers
-    lval = 0;
-    wrk = 0;
-    
-    // convert octet d
-    strncpy(buf,&str[12],3);
-    kstrtol(buf,10,&lval);
-    if (lval<0){
-        lval=0;
-    }
-    wrk += (uint32_t) lval;
-     wrk <<= 8; // shift octet over to make room for next one
-    
-        // convert octet c
-    strncpy(buf,&str[8],3);
-    kstrtol(buf,10,&lval);
-    if (lval<0){
-        lval=0;
-    }
-    wrk += (uint32_t) lval;
-    wrk <<= 8;
-    
-        // convert octet b
-    strncpy(buf,&str[4],3);
-    kstrtol(buf,10,&lval);
-    if (lval<0){
-        lval=0;
-    }
-    wrk += (uint32_t) lval;
-    wrk <<= 8;
-    
-        // convert octet a
-    strncpy(buf,&str[0],3); //extract octet chars from string
-    kstrtol(buf,10,&lval); // convert to long
-    if (lval<0){ // if did not convert, set octet to 0
-        lval=0;
-    }
-    wrk += (uint32_t) lval; // add to working addr
-    
-
-    
-    target_addr->s_addr = wrk;
-    return 0;
-    
-}
-
-/**
- * Function to convert colon-separated hexadecimal IPv6 address string to in6_addr structure
- */
-int in6_pton(char *str, struct in6_addr *target_addr){
-    
-    //Test for proper addr len
-    if(strlen(str)!=39){
-        return 1;  //Unable to convert
-    }
-
-    // setup buffers
-    lval = 0;
-    wrk = 0;
-
-    for(pton_i=0; pton_i<8; pton_i++){ // for each 16 bit group
-        
-        //top 2 bytes of group
-        strncpy(buf,&str[0+(5*pton_i)],2); // extract hex chars from str
-        kstrtol(buf,16,&lval); // convert to long
-        if (lval<0){ // if did not convert, set byte to 0
-            lval=0;
-        }
-        target_addr->s6_addr[(2*pton_i)] = (char) lval; // Copy byte to dest struct.
-
-        // repeat for bottom 2 bytes of group
-        strncpy(buf,&str[2+(5*pton_i)],2);
-        kstrtol(buf,16,&lval);
-        if (lval<0){
-            lval=0;
-        }
-        target_addr->s6_addr[(2*pton_i)+1] = (char) lval;
-
-    }    
-
-    return 0;
 }
