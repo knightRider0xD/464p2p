@@ -53,7 +53,7 @@ int init_module() {
         #endif
     
     in4_arg = kzalloc(sizeof(struct in_addr), GFP_ATOMIC);
-    if(in4_pton(v4Addr,-1,in4_arg,-1,end)!=0){
+    if(in4_pton(v4Addr,-1,in4_arg,-1,end)!=1){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] LOAD; Invalid IPv4 Address Supplied. Unloading.\n");
         #endif
@@ -62,7 +62,7 @@ int init_module() {
     }
     
     in6_arg = kzalloc(sizeof(struct in6_addr), GFP_ATOMIC);
-    if(in6_pton(v6Addr,-1,in6_arg,-1,end)!=0){
+    if(in6_pton(v6Addr,-1,in6_arg,-1,end)!=1){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] LOAD; Invalid IPv6 Address Supplied. Unloading.\n");
         #endif
