@@ -419,7 +419,7 @@ int in6_pton(char *str, struct in6_addr *target_addr){
         if (lval<0){
             lval=0;
         }
-        target_addr->s6_addr[15-(2*pton_i)+1] = (char) lval;
+        target_addr->s6_addr[15-((2*pton_i)+1)] = (char) lval;
 
     }    
 
