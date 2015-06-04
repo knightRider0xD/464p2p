@@ -3,6 +3,7 @@ sudo echo starting
 git pull
 cd kmod/
 make fresh
+sync
 sudo make install
 cd ..
 ./config/interfaces_arch.sh
