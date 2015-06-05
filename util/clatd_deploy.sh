@@ -10,11 +10,12 @@ if $1 == '0'; then
     cd clatd/
     sudo make install installdeps
 fi
-
+a=$2
+a=$((3-a))
 echo "clat-v4-addr=192.0.0.$2
-clat-v6-addr=fd16:6db2:c925:0:2544:67fa:9e35:$2
+clat-v6-addr=fd16:6db2:c925:$2::C000:$2
 plat-dev=$3
-plat-prefix=fd16:6db2:c926::/56
+plat-prefix=fd16:6db2:c925:$a::/64
 tayga-v4-addr=192.0.1.$2
 v4-conncheck-enable=no" > clatd.conf
 
