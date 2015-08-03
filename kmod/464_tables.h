@@ -31,7 +31,7 @@ struct in6_addr * local_46_xlat(struct in_addr *local_4_addr);
 struct in_addr * remote_64_xlat(struct in6_addr *remote_6_addr);
 struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr);
 
-int in4_pton(char *str, struct in_addr *target_addr);
-int in6_pton(char *str, struct in6_addr *target_addr);
+//int in4_pton(char *str, struct in_addr *target_addr);
+//int in6_pton(char *str, struct in6_addr *target_addr);
 
 #endif /* __464_TABLES */

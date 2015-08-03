@@ -4,6 +4,7 @@
 #include <linux/list.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
+#include <linux/inet.h>
 
 /*
  * Included in 464_tables.h
@@ -65,17 +66,22 @@ int cleanup_tables()
 /********************************
  * XLAT Tables
  ********************************/
-
+//###########hgHJGKG########
 /**
  * Function to parse XLAT Entry from string
  */
 int xlat_add(char xlat_str[]){
     
+    const char *end;
+    
     strncpy(addr_6,xlat_str,39);
     
     in6 = kzalloc(sizeof(struct in6_addr),GFP_ATOMIC);
     
-    if(in6_pton(addr_6,in6)!=0){
+    //int in6_pton(const char *src, int srclen,u8 *dst,int delim, const char **end)
+    // http://lxr.free-electrons.com/source/net/core/utils.c#L186
+    //if(in6_pton(addr_6,in6)!=0){
+    if(in6_pton(xlat_str,39,in6,':',*end)!=1){
         kfree(in6);
         return -1;
     }
@@ -85,7 +91,10 @@ int xlat_add(char xlat_str[]){
     
     in4 = kzalloc(sizeof(struct in_addr),GFP_ATOMIC);
     
-    if(in4_pton(addr_4,in4)!=0){
+    //int in4_pton(const char *src, int srclen, u8 *dst, int delim, const char **end)
+    // http://lxr.free-electrons.com/source/net/core/utils.c#L120
+    //if(in4_pton(addr_4,in4)!=0){
+    if(in4_pton(xlat_str+40,15,in4,'.',*end)!=1){
         kfree(in6);
         kfree(in4);
         return -2;
@@ -335,7 +344,7 @@ struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
 
 /**
  * Function to convert dotted decimal IPv4 address string to in_addr structure
- */
+ *
 int in4_pton(char *str, struct in_addr *target_addr){
     
     //Test for proper addr len
@@ -391,7 +400,7 @@ int in4_pton(char *str, struct in_addr *target_addr){
 
 /**
  * Function to convert colon-separated hexadecimal IPv6 address string to in6_addr structure
- */
+ *
 int in6_pton(char *str, struct in6_addr *target_addr){
     
     //Test for proper addr len
@@ -424,4 +433,4 @@ int in6_pton(char *str, struct in6_addr *target_addr){
     }    
 
     return 0;
-}
+}*/
