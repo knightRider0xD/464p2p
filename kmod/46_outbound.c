@@ -114,6 +114,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] OUT; Error Sending 6 Packet; DROP.\n");
         #endif
+        kfree_skb(out_skb);
         return NF_DROP;
     }
     
