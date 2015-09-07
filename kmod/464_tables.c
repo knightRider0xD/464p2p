@@ -70,7 +70,7 @@ int cleanup_tables()
 /**
  * Function to parse XLAT Entry from string
  */
-int xlat_add(char xlat_str[]){
+/*int xlat_add(char xlat_str[]){
     
     const char *end;
     
@@ -103,7 +103,28 @@ int xlat_add(char xlat_str[]){
     remote_xlat_add(in6, in4);
     return 0;
     
+}*/
+
+int xlat_add(void){
+    
+    char stat_addr_6[] = {0x76,0x28,0x35,0x9e,0xfa,0x67,0x44,0x25,0x00,0x00,0x25,0xc9,0xb2,0x6d,0x16,0xfd}; // Little Endian Byte Ordered
+    //char stat_addr_6[] = {0x9e,0x35,0x28,0x76,0x25,0x44,0x67,0xfa,0xc9,0x25,0x00,0x00,0xfd,0x16,0x6d,0xb2}; // Little Endian Word Ordered
+    //char stat_addr_6[] = {0xfd,0x16,0x6d,0xb2,0xc9,0x25,0x00,0x00,0x25,0x44,0x67,0xfa,0x9e,0x35,0x28,0x76}; // Network Order
+    
+    in6 = kzalloc(sizeof(struct in6_addr),GFP_ATOMIC);
+    memcpy(in6,stat_addr_6,16);
+    
+    char stat_addr_4[] = {1,254,168,192}; // Little Endian Byte Ordered
+    //char stat_addr_4[] = {192,168,254,001}; // Network Order
+    
+    in4 = kzalloc(sizeof(struct in_addr),GFP_ATOMIC);
+    memcpy(in4,stat_addr_4,4);
+    
+    remote_xlat_add(in6, in4);
+    return 0;
+    
 }
+
 
 /**
  * Function to parse static XLAT Entry
@@ -112,7 +133,8 @@ int static_xlat_add(){
     
     //strncpy(static_entry,"0000:0000:0000:0000:0000:0000:0000:0000 000.000.000.000",56);
     //xlat_add("0000:0000:0000:0000:0000:0000:0000:0000 000.000.000.000");
-    xlat_add("fd16:6db2:c925:0000:2544:67fa:9e35:2876 192.168.254.001");
+    //xlat_add("fd16:6db2:c925:0000:2544:67fa:9e35:2876 192.168.254.001");
+    xlat_add();
     //xlat_add("fe80:0000:0000:0000:2544:67fa:9e35:2876 192.168.254.001");
     return 1;
     /*
