@@ -13,4 +13,4 @@ install:
 clean:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 	
-fresh: clean all
+fresh: clean all-debug
