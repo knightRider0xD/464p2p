@@ -1,5 +1,7 @@
 all: client4 client6 server4 server6
 
+fresh: clean all
+
 client4: udp-client4.c
 	gcc udp-client4.c -o client4
 client6: udp-client6.c

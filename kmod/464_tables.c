@@ -238,6 +238,10 @@ struct in_addr * local_64_xlat(struct in6_addr *local_6_addr){
     struct host_entry *current_host; // Pointer to current position in XLAT list
     list_for_each_entry(current_host, &xlat_local, linked_list_data){
         
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] IN; My Addr %pI6 , Pkt Addr %pI6 .\n",current_host->in6,local_6_addr);
+        #endif
+        
         // If match return pointer to corresponding IPv4 address
         if(!memcmp(current_host->in6,local_6_addr,sizeof(struct in6_addr))){
             //TODO Move to head
@@ -259,6 +263,10 @@ struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
         //#ifdef VERBOSE_464P2P
         //    printk(KERN_INFO "[464P2P] 46X; %p=%x, %p=%x, %p\n", current_host->in4, *(current_host->in4), local_4_addr, *local_4_addr, current_host->linked_list_data.next);
         //#endif
+        
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] OUT; My Addr %pI4 , Pkt Addr %pI4 .\n",current_host->in4,local_4_addr);
+        #endif
         
         // If match return pointer to corresponding IPv4 address
         if(!memcmp(current_host->in4,local_4_addr,sizeof(struct in_addr))){

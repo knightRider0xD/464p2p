@@ -8,4 +8,7 @@ sudo make install
 cd ..
 ./config/interfaces_arch.sh
 sleep 2
-./util/core_udp_test/client4 192.168.254.1 2000 "hi"
+cd ./util/core_udp_test/
+make fresh
+client4 192.168.254.1 2000 "hi"
+cd ../..
