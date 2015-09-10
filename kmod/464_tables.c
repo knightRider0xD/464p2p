@@ -265,7 +265,7 @@ struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
         //#endif
         
         #ifdef VERBOSE_464P2P
-            'printk(KERN_INFO "[464P2P] OUT; My Addr %pI4 , Pkt Addr %pI4 .\n",current_host->in4,local_4_addr);
+            printk(KERN_INFO "[464P2P] OUT; My Addr %pI4 , Pkt Addr %pI4 .\n",current_host->in4,local_4_addr);
         #endif
         
         // If match return pointer to corresponding IPv4 address
