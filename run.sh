@@ -10,5 +10,5 @@ cd ..
 sleep 2
 cd ./util/core_udp_test/
 make fresh
-client4 192.168.254.1 2000 "hi"
+./client4 192.168.254.1 2000 "hi"
 cd ../..
