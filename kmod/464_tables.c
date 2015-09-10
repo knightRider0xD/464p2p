@@ -114,8 +114,8 @@ int xlat_add(void){
     in6 = kzalloc(sizeof(struct in6_addr),GFP_ATOMIC);
     memcpy(in6,stat_addr_6,16);
     
-    char stat_addr_4[] = {1,254,168,192}; // Little Endian Byte Ordered
-    //char stat_addr_4[] = {192,168,254,001}; // Network Order
+    //char stat_addr_4[] = {1,254,168,192}; // Little Endian Byte Ordered
+    char stat_addr_4[] = {192,168,254,001}; // Network Order
     
     in4 = kzalloc(sizeof(struct in_addr),GFP_ATOMIC);
     memcpy(in4,stat_addr_4,4);
@@ -265,7 +265,7 @@ struct in6_addr * local_46_xlat(struct in_addr *local_4_addr){
         //#endif
         
         #ifdef VERBOSE_464P2P
-            printk(KERN_INFO "[464P2P] OUT; My Addr %pI4 , Pkt Addr %pI4 .\n",current_host->in4,local_4_addr);
+            'printk(KERN_INFO "[464P2P] OUT; My Addr %pI4 , Pkt Addr %pI4 .\n",current_host->in4,local_4_addr);
         #endif
         
         // If match return pointer to corresponding IPv4 address
