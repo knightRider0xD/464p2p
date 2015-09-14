@@ -1,4 +1,8 @@
-all: init update kmod install configure mktest runtest
+all: init update mkkmod ldkmod configure mktest dotest
+
+configure: cfgif
+
+clean: rmkmod clkmod
 
 init: 
 	sudo echo starting
@@ -6,18 +10,34 @@ init:
 update:
 	git pull
 
-kmod:
-	cd kmod && $(MAKE) fresh
+	
+mkkmod:
+	cd kmod && \
+	$(MAKE) fresh
 
-install:
-	cd kmod && sync && sudo $(MAKE) install
+ldkmod:
+	cd kmod && \
+	sync && \
+	sudo $(MAKE) install
 
-configure:
+rmkmod:
+	cd kmod && \
+	sync && \
+	sudo $(MAKE) uninstall
+
+clkmod:
+	cd kmod && \
+	sudo $(MAKE) clean
+	
+
+cfgif:
 	./config/interfaces_arch.sh
 	sleep 2
 	
 mktest:
-	cd ./util/core_udp_test/ && $(MAKE) fresh && ./client4 192.168.254.1 2000 "hi"
+	cd ./util/core_udp_test/ && \
+	$(MAKE) fresh
 	
-runtest:
-	cd ./util/core_udp_test/ && $(MAKE) fresh && ./client4 192.168.254.1 2000 "hi"
+dotest:
+	cd ./util/core_udp_test/ && \
+	./client4 192.168.254.1 2000 "hi"
