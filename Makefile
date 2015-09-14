@@ -18,7 +18,8 @@ mkkmod:
 ldkmod:
 	cd kmod && \
 	sync && \
-	sudo $(MAKE) install
+	sudo $(MAKE) install && \
+	sync
 
 rmkmod:
 	cd kmod && \
