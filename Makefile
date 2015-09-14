@@ -30,7 +30,12 @@ clkmod:
 	cd kmod && \
 	sudo $(MAKE) clean
 	
+runstatus:
+	dmesg
 
+runreview:
+	journalctl -b -1
+	
 cfgif:
 	./config/interfaces_arch.sh
 	sleep 2
