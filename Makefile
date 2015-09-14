@@ -7,22 +7,14 @@ update:
 	git pull
 
 kmod:
-	cd kmod/
-	make fresh
-	cd ..
+	cd kmod && $(MAKE) fresh
 
 install:
-	cd kmod/
-	sync
-	sudo make install
-	cd ..
+	cd kmod && sync && sudo $(MAKE) install
 
 configure:
 	./config/interfaces_arch.sh
 	sleep 2
 	
 test:
-	cd ./util/core_udp_test/
-	make fresh
-	./client4 192.168.254.1 2000 "hi"
-	cd ../..
+	cd ./util/core_udp_test/ && $(MAKE) fresh && ./client4 192.168.254.1 2000 "hi"
