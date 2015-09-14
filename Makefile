@@ -1,4 +1,4 @@
-all: init update kmod install configure test
+all: init update kmod install configure mktest runtest
 
 init: 
 	sudo echo starting
@@ -16,5 +16,8 @@ configure:
 	./config/interfaces_arch.sh
 	sleep 2
 	
-test:
+mktest:
+	cd ./util/core_udp_test/ && $(MAKE) fresh && ./client4 192.168.254.1 2000 "hi"
+	
+runtest:
 	cd ./util/core_udp_test/ && $(MAKE) fresh && ./client4 192.168.254.1 2000 "hi"
