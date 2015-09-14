@@ -93,17 +93,25 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     in4_hdr->ttl               = in6_hdr->hop_limit;
     in4_hdr->tos               = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
     
-    struct flowi4 fl4 = {
+    /*struct flowi4 fl4 = {
         .saddr = s_4_addr->s_addr,
         .daddr = d_4_addr->s_addr,
-    };
+    };*/
+    
+    struct flowi fl;
+
+    memset(&fl, 0, sizeof(fl));
+    fl.u.ip4.saddr = s_4_addr->s_addr,
+    fl.u.ip4.daddr = d_4_addr->s_addr,
+    fl.flowi_tos = RT_TOS(in4_hdr->tos);
+    fl.flowi_proto = in4_hdr->protocol;
     
     
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Dispatch Packet.\n");
     #endif
     
-    struct dst_entry *in_dst = ip_route_output_key(&init_net, &fl4);
+    struct dst_entry *in_dst = ip_route_output_key(&init_net, &fl.u.ip4);//&fl4);
     skb_dst_set(in_skb, in_dst);
     in_skb->dev = in_dst->dev;
     
