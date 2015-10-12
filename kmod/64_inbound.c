@@ -88,8 +88,8 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     #endif
     
     // Write new v4 header data
-    in4_hdr->ihl               = 10; //size of IPv4 Header
-    in4_hdr->version           = 4;
+    //in4_hdr->ihl               = 10; //size of IPv4 Header
+    //in4_hdr->version           = 4;
     //in4_hdr->tot_len           = sizeof(struct iphdr)+in6_hdr->payload_len; // total length = header size (40 bytes + v6 payload size)
     //in4_hdr->protocol          = in6_hdr->nexthdr;
     //in4_hdr->daddr             = d_4_addr->s_addr;
