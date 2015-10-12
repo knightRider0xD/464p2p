@@ -78,10 +78,18 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     // Reset header positions
     skb_reset_network_header(skb);
     
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] IN; skb reset; allocate space.\n");
+    #endif
+    
     // Copy & Push space for new IPv6 header
     in_skb = skb_copy(skb,GFP_ATOMIC);
     skb_push(in_skb, sizeof(struct iphdr));
     skb_reset_network_header(in_skb);
+    
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] IN; skb reallocated; convert header to IPv4.\n");
+    #endif
     
     // Write new v4 header data
     in4_hdr->ihl               = 10; //size of IPv4 Header
