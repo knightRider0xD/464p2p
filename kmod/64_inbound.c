@@ -97,6 +97,11 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     in4_hdr->ttl               = in6_hdr->hop_limit;
     in4_hdr->tos               = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
     
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] IN; header ready; do flow.\n");
+    #endif
+    
+    
     struct flowi4 fl4 = {
         .saddr = s_4_addr->s_addr,
         .daddr = d_4_addr->s_addr,
