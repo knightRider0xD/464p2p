@@ -64,7 +64,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     
     // If packet dest address is a 464p2p address, convert packet, STOLEN and queue for v4 processing.
     #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] OUT; My Packet; Converting 4->6 ...");
+        printk(KERN_INFO "[464P2P] OUT; My Packet; Converting 4->6 ...\n");
     #endif  
     
     // XLAT v4 remote address
@@ -72,7 +72,7 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     
     if(d_6_addr==NULL){
         #ifdef VERBOSE_464P2P
-            printk(KERN_INFO "[464P2P] OUT; Remote address not found; DROP");
+            printk(KERN_INFO "[464P2P] OUT; Remote address not found; DROP\n");
         #endif        
         return NF_DROP;
     }
