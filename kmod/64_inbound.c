@@ -74,7 +74,7 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     }
     
     // Pull mac and network layer headers ready to push new head network layer header
-    skb_pull(in_skb, skb_transport_offset(skb));    
+    skb_pull(skb, skb_transport_offset(skb));    
     // Reset header positions
     skb_reset_network_header(skb);
     
