@@ -82,24 +82,17 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     in_skb = skb_copy(skb,GFP_ATOMIC);
     skb_push(in_skb, sizeof(struct iphdr));
     skb_reset_network_header(in_skb);
-    
-    #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] IN; skb reallocated; convert header to IPv4.\n");
-    #endif
+    in4_hdr = ip_hdr(in_skb);
     
     // Write new v4 header data
-    //in4_hdr->ihl               = 10; //size of IPv4 Header
-    //in4_hdr->version           = 4;
-    //in4_hdr->tot_len           = sizeof(struct iphdr)+in6_hdr->payload_len; // total length = header size (40 bytes + v6 payload size)
-    //in4_hdr->protocol          = in6_hdr->nexthdr;
-    //in4_hdr->daddr             = d_4_addr->s_addr;
-    //in4_hdr->saddr             = s_4_addr->s_addr;
-    //in4_hdr->ttl               = in6_hdr->hop_limit;
-    //in4_hdr->tos               = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
-    
-    #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] IN; header ready; do flow.\n");
-    #endif
+    in4_hdr->ihl               = 10; //size of IPv4 Header
+    in4_hdr->version           = 4;
+    in4_hdr->tot_len           = sizeof(struct iphdr)+in6_hdr->payload_len; // total length = header size (40 bytes + v6 payload size)
+    in4_hdr->protocol          = in6_hdr->nexthdr;
+    in4_hdr->daddr             = d_4_addr->s_addr;
+    in4_hdr->saddr             = s_4_addr->s_addr;
+    in4_hdr->ttl               = in6_hdr->hop_limit;
+    in4_hdr->tos               = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
     
     
     struct flowi4 fl4 = {
