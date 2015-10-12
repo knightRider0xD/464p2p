@@ -92,14 +92,14 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     in4_hdr->version           = 4;
     in4_hdr->tot_len           = sizeof(struct iphdr)+in6_hdr->payload_len; // total length = header size (40 bytes + v6 payload size)
     in4_hdr->protocol          = in6_hdr->nexthdr;
-    in4_hdr->daddr             = d_4_addr->s_addr;
-    in4_hdr->saddr             = s_4_addr->s_addr;
+    in4_hdr->daddr             = *d_4_addr;//->s_addr;
+    in4_hdr->saddr             = *s_4_addr;//->s_addr;
     in4_hdr->ttl               = in6_hdr->hop_limit;
     in4_hdr->tos               = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
     
     struct flowi4 fl4 = {
-        .saddr = s_4_addr->s_addr,
-        .daddr = d_4_addr->s_addr,
+        .saddr = *s_4_addr;//->s_addr,
+        .daddr = *d_4_addr;//->s_addr,
     };
     
     /*struct flowi fl;
