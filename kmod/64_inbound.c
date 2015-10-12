@@ -67,10 +67,21 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     s_4_addr = remote_64_xlat(&in6_hdr->saddr);
     
     if(s_4_addr==NULL){
-    #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] IN; Remote address not found; DROP\n");
-    #endif
-        return NF_DROP;
+        
+        s_4_addr = local_64_xlat(&in6_hdr->saddr);
+        
+        if(s_4_addr==NULL){
+            #ifdef VERBOSE_464P2P
+                printk(KERN_INFO "[464P2P] IN; Remote address not found; DROP\n");
+            #endif
+            return NF_DROP;
+        }
+        
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] IN; Loopback address; ACCEPT\n");
+        #endif
+        return NF_ACCEPT;
+        
     }
     
     // Pull mac and network layer headers ready to push new head network layer header

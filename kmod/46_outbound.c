@@ -71,10 +71,20 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     d_6_addr = remote_46_xlat((struct in_addr*) &out4_hdr->daddr);
     
     if(d_6_addr==NULL){
+            
+        d_6_addr = local_46_xlat((struct in_addr*) &(out4_hdr->daddr));
+    
+        if(d_6_addr==NULL){
+            #ifdef VERBOSE_464P2P
+                printk(KERN_INFO "[464P2P] OUT; Remote address not found; DROP\n");
+            #endif        
+            return NF_DROP;
+        }
+        
         #ifdef VERBOSE_464P2P
-            printk(KERN_INFO "[464P2P] OUT; Remote address not found; DROP\n");
-        #endif        
-        return NF_DROP;
+            printk(KERN_INFO "[464P2P] OUT; Loopback address; ACCEPT\n");
+        #endif
+        return NF_ACCEPT;
     }
     
     //printk(KERN_INFO "[464P2P] OUT; mac size:%d;net size:%d.\n",skb_network_header(out_skb)-skb_mac_header(out_skb), skb_network_header_len(out_skb));
