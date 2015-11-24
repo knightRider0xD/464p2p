@@ -36,34 +36,34 @@ char addr_6[40];
 
 struct sock * nlsock;
 
+void netlink_receive(struct sock *sk, int len)
+{
+    struct sk_buff *skb;
+    struct nlmsghdr *nlh = NULL;
+    u8 *payload = NULL;
 
-int init_netlink()
+    while ((skb = skb_dequeue(&sk->receive_queue))
+        != NULL) {
+    /* process netlink message pointed by skb->data */
+    nlh = (struct nlmsghdr *)skb->data;
+    payload = NLMSG_DATA(nlh);
+    /* process netlink message with header pointed by
+    * nlh	and payload pointed by payload
+    */
+    }
+}
+
+int netlink_init()
 {
     
-    nlsock = netlink_kernel_create(NETLINK_ROUTE6,input);
+    nlsock = netlink_kernel_create(NETLINK_464P2P,input);
     
     return 0;
 }
 
-int cleanup_netlink()
+int netlink_cleanup()
 {
     return 0;
 }
 
 
-void input(struct sock *sk, int len)
-{
- struct sk_buff *skb;
- struct nlmsghdr *nlh = NULL;
- u8 *payload = NULL;
-
- while ((skb = skb_dequeue(&sk->receive_queue))
-       != NULL) {
- /* process netlink message pointed by skb->data */
- nlh = (struct nlmsghdr *)skb->data;
- payload = NLMSG_DATA(nlh);
- /* process netlink message with header pointed by
-  * nlh	and payload pointed by payload
-  */
- }
-}
