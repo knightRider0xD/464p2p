@@ -29,9 +29,6 @@ struct xlat_entry in_addr_cache;
 struct in_addr *in4;
 struct in6_addr *in6;
 
-char addr_4[16];
-char addr_6[40];
-
 // setup pton buffers
 char buf[4];
 long lval;
@@ -71,6 +68,9 @@ int cleanup_tables()
  * Function to parse XLAT Entry from string
  */
 /*int xlat_add(char xlat_str[]){
+    
+    char addr_4[16];
+    char addr_6[40];
     
     const char *end;
     
@@ -124,52 +124,6 @@ int xlat_add(void){
     
     remote_xlat_add(in6, in4);
     return 0;
-    
-}
-
-
-/**
- * Function to parse static XLAT Entry
- */
-int static_xlat_add(){
-    
-    //strncpy(static_entry,"0000:0000:0000:0000:0000:0000:0000:0000 000.000.000.000",56);
-    //xlat_add("0000:0000:0000:0000:0000:0000:0000:0000 000.000.000.000");
-    //xlat_add("fd16:6db2:c925:0000:2544:67fa:9e35:2876 192.168.254.001");
-    xlat_add();
-    //xlat_add("fe80:0000:0000:0000:2544:67fa:9e35:2876 192.168.254.001");
-    return 1;
-    /*
-    //Check entry if done, next or new
-    if (!strncmp(static_entry,"0",2)){
-        //Already done
-        return 0;
-    } else if (!strncmp(static_entry,"1",2)){
-        //No more
-        return 1;
-    }
-    
-    //New entry to process
-    int res = xlat_add(static_entry);
-    if(res>=0){
-        //Processed entry okay? Yes; acknowledge via sysctl for userspace interface to continue.
-        strncpy(static_entry,"0",2);
-    }
-    return res;
-    */
-    
-}
-
-/**
- * Function to parse dynamic XLAT Entry
- */
-int dynamic_xlat_add(){
-    
-    return 0;
-    
-    //Not yet implemented
-    //return xlat_add(dynamic_entry);
-    
     
 }
 

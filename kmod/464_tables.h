@@ -7,22 +7,22 @@
 #include <linux/in6.h>
 
 struct xlat_entry {
-     struct in6_addr *in6;
      struct in_addr *in4;
+     struct in6_addr *in6;
      struct hlist_node hash_list_data;
 };
 
 struct host_entry {
-     struct in6_addr *in6;
      struct in_addr *in4;
+     struct in6_addr *in6;
      struct list_head linked_list_data;
 };
 
 int init_tables(void);
 int cleanup_tables(void);
 
-int static_xlat_add(void);
-int dynamic_xlat_add(void);
+int xlat_add(void);
+
 int local_xlat_add(struct in6_addr *local_6_addr, struct in_addr *local_4_addr);
 int remote_xlat_add(struct in6_addr *remote_6_addr, struct in_addr *remote_4_addr);
 
