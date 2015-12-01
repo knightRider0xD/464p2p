@@ -1,3 +1,5 @@
+#include <unistd.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <linux/netlink.h>
 #include <stdlib.h>
@@ -82,7 +84,7 @@ int main(int argc, char *argv[])
     src_addr.nl_family = AF_NETLINK;
     src_addr.nl_pid = getpid(); /* self pid */
 
-    bind(sock_fd, (struct sockaddr*)&src_addr, sizeof(src_addr));
+    bind(sock, (struct sockaddr*)&src_addr, sizeof(src_addr));
 
     memset(&dest_addr, 0, sizeof(dest_addr));
     memset(&dest_addr, 0, sizeof(dest_addr));
@@ -90,13 +92,13 @@ int main(int argc, char *argv[])
     dest_addr.nl_pid = 0; /* For Linux Kernel */
     dest_addr.nl_groups = 0; /* unicast */
 
-    nlh = (struct nlmsghdr *)malloc(NLMSG_SPACE(MAX_PAYLOAD));
-    memset(nlh, 0, NLMSG_SPACE(MAX_PAYLOAD));
-    nlh->nlmsg_len = NLMSG_SPACE(MAX_PAYLOAD);
+    nlh = (struct nlmsghdr *)malloc(NLMSG_SPACE(sizeof(struct nl464data)));
+    memset(nlh, 0, NLMSG_SPACE(sizeof(struct nl464data)));
+    nlh->nlmsg_len = NLMSG_SPACE(sizeof(struct nl464data));
     nlh->nlmsg_pid = getpid();
     nlh->nlmsg_flags = 0;
 
-    memcpy(NLMSG_DATA(nlh), &data);
+    memcpy(NLMSG_DATA(nlh), &data, sizeof(struct nl464data));
 
     iov.iov_base = (void *)nlh;
     iov.iov_len = nlh->nlmsg_len;
@@ -106,11 +108,11 @@ int main(int argc, char *argv[])
     msg.msg_iovlen = 1;
 
     printf("Sending message to kernel\n");
-    sendmsg(sock_fd,&msg,0);
+    sendmsg(sock,&msg,0);
     printf("Waiting for message from kernel\n");
 
     /* Read message from kernel */
-    recvmsg(sock_fd, &msg, 0);
+    recvmsg(sock, &msg, 0);
     printf("Received message payload: %s\n", (char *)NLMSG_DATA(nlh));
-    close(sock_fd);
+    close(sock);
 }
