@@ -14,6 +14,7 @@
 #include "64_inbound.h"
 #include "46_outbound.h"
 #include "464_tables.h"
+#include "464_netlink.h"
 
 #define VERBOSE_464P2P
 
@@ -44,7 +45,7 @@ int init_module() {
         printk(KERN_INFO "[464P2P] LOAD; Init 64 & Register Hook.\n");
     #endif
     
-    in_nfho.hook = on_nf_hook_in;                       //function to call when conditions below met
+    in_nfho.hook = (nf_hookfn *) on_nf_hook_in;                       //function to call when conditions below met
     in_nfho.hooknum = 1; //NF_IP6_LOCAL_IN;            //After IPv6 packet routed and before local delivery
     in_nfho.pf = PF_INET6;                           //IP packets
     in_nfho.priority = 100;//NF_IP6_PRI_NAT_SRC;             //set to equal priority as NAT src
@@ -56,7 +57,7 @@ int init_module() {
     
     init_46_outbound(outboundfl); //init & set flowlabel support
     
-    out_nfho.hook = on_nf_hook_out;                       //function to call when conditions below met
+    out_nfho.hook = (nf_hookfn *) on_nf_hook_out;                       //function to call when conditions below met
     out_nfho.hooknum = 3; //NF_IP_LOCAL_OUT;            //After IPv4 packet Created and before routing
     out_nfho.pf = PF_INET;                           //IP packets
     out_nfho.priority = 100; //NF_IP_PRI_NAT_SRC;             //set to equal priority as NAT src

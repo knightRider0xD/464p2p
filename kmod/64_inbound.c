@@ -19,6 +19,7 @@
 struct sk_buff *in_skb;             //inbound packet
 struct ipv6hdr *in6_hdr;            //IPv6 header of inbound packet
 struct iphdr *in4_hdr;              //New IPv4 header for inbound packet
+struct dst_entry *in_dst;
 
 struct in_addr *d_4_addr;
 struct in_addr *s_4_addr;
@@ -38,9 +39,7 @@ void init_64_inbound(){
 
 // On NetFilter hook triggered
 unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
-    
-    //in_skb = skb;
-    
+
     if(!skb){
         return NF_ACCEPT;
     }
@@ -106,25 +105,16 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     in4_hdr->tos               = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
     
     
-    struct flowi4 fl4 = {
-        .saddr = s_4_addr->s_addr,
-        .daddr = d_4_addr->s_addr,
-    };
+    memset(&fl4, 0, sizeof(fl4));
+    fl4.saddr = s_4_addr->s_addr;
+    fl4.daddr = d_4_addr->s_addr;
     
-    /*struct flowi fl;
-
-    memset(&fl, 0, sizeof(fl));
-    fl.u.ip4.saddr = s_4_addr->s_addr,
-    fl.u.ip4.daddr = d_4_addr->s_addr,
-    fl.flowi_tos = RT_TOS(in4_hdr->tos);
-    fl.flowi_proto = in4_hdr->protocol;
-    */
     
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Dispatch Packet.\n");
     #endif
     
-    struct dst_entry *in_dst = ip_route_output_key(&init_net, &fl4);//&fl.u.ip4);//&fl4);
+    in_dst = (struct dst_entry *) ip_route_output_key(&init_net, &fl4);//&fl.u.ip4);//&fl4);
     skb_dst_set(in_skb, in_dst);
     in_skb->dev = in_dst->dev;
     

@@ -20,6 +20,7 @@
 struct sk_buff *out_skb;             //inbound packet
 struct iphdr *out4_hdr;             //IP header of inbound packet
 struct ipv6hdr *out6_hdr;             //IP header of inbound packet;
+struct dst_entry *out_dst;
 
 struct in6_addr *s_6_addr;
 struct in6_addr *d_6_addr;
@@ -41,9 +42,6 @@ void init_46_outbound(int enable_46_flowlabels){
 
 // On NetFilter hook triggered
 unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)){
-    
-    
-    //out_skb = skb;
     
     if(!skb){
         return NF_ACCEPT;
@@ -107,16 +105,15 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
     out6_hdr->priority         = (out4_hdr->tos>>4);
     out6_hdr->flow_lbl[0]      = ((out4_hdr->tos&15)<<4);// + ip6_make_flowlabel(sock_net(skb->sk), skb, 0,outbound_46_flowlabels); //current flow label value (does not exist)
     
-    struct flowi6 fl6 = {
-        .saddr = *s_6_addr,
-        .daddr = *d_6_addr,
-    };
+    memset(&fl6, 0, sizeof(fl6));
+    fl6.saddr = *s_6_addr;
+    fl6.daddr = *d_6_addr;
     
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Dispatch packet.\n");
     #endif
     
-    struct dst_entry *out_dst = ip6_route_output(&init_net, NULL, &fl6);
+    out_dst = (struct dst_entry *) ip6_route_output(&init_net, NULL, &fl6);
     skb_dst_set(out_skb, out_dst);
     out_skb->dev = out_dst->dev;
     

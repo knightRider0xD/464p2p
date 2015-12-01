@@ -1,4 +1,5 @@
 #include <linux/netlink.h>
+#include <uapi/linux/netlink.h>
 #include <net/sock.h>
 #include <linux/skbuff.h>
 
@@ -38,23 +39,23 @@ struct nl464data {
     struct in6_addr in6;
 };
 
+struct nlmsghdr *nlh;
+struct nl464data *nl464d;
+
+int src_pid;
+
+struct sk_buff *skb_out;
+__u32 reponse; 
+int res;
+
 void on_netlink_receive(struct sk_buff *skb)
 {
     
-    struct nlmsghdr nlh_cache;
-    struct nlmsghdr *nlh;
-    
-    struct nl464data nl464d_cache;
-    struct nl464data *nl464d;
-    
-    int src_pid;
-    
-    struct sk_buff *skb_out;
-    __u32 reponse; 
-    int res;
+
+    res = 1;
     
     // Validate packet long enough for headers
-    if(skb->data_len< sizeof(nlmsghdr)+sizeof(nl464data)){
+    if(skb->data_len< sizeof(struct nlmsghdr)+sizeof(struct nl464data)){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] NETLINK; Packet too short; Ignoring.\n");
         #endif
@@ -62,34 +63,46 @@ void on_netlink_receive(struct sk_buff *skb)
     }
     
     // get pointers to netlink headers
-    nlh=(struct nlmsghdr*) skb_header_pointer(skb, 0, sizeof(nlmsghdr) , &nlh_cache);
-    nl464d=(struct nl464head*)skb_header_pointer(skb, 0, sizeof(nl464head), &nl464h_cache);
+    nlh=(struct nlmsghdr*) skb->data;
+    nl464d=(struct nl464data*)nlmsg_data(nlh);
     
-    /*
-    if(!nl464d->flags & NL464_DATA){
-        // status request; ignore packet data fields & check status flags
-        if(nl464d->flags & NL464_LOCAL_STATUS){
-        
-        } else if(nl464h->flags & NL464_REMOTE_STATUS){
-            
-        }
+    // get pid of sending process
+    src_pid = nlh->nlmsg_pid;
+    
+    
+    if(!((nl464d->flags & NL464_DATA4)&&(nl464d->flags & NL464_DATA6))){
+        //no addresses present
+        return;
     }
     
-    // check flags
-    if(nl464d->flags & NL464_LOCAL_STATUS){
-        
-    } else if(nl464d->flags & NL464_REMOTE_STATUS){
-        
-    } else */
     if(nl464d->flags & NL464_LOCAL_ADD){
-        local_xlat_add(&(nl464d->in6), &(nl464d->in4));
+        res = local_xlat_add(&(nl464d->in6), &(nl464d->in4));
     } else if(nl464d->flags & NL464_REMOTE_ADD){
-        remote_xlat_add(&(nl464d->in6), &(nl464d->in4));
-    }/* else if(nl464d->flags & NL464_LOCAL_REMOVE){
-        
-    } else if(nl464d->flags & NL464_REMOTE_REMOVE){
-        
-    }*/
+        res = remote_xlat_add(&(nl464d->in6), &(nl464d->in4));
+    }
+    
+    skb_out = nlmsg_new(sizeof(struct nl464data),0);
+
+    if(!skb_out)
+    {
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] NETLINK; Failed to Allocate Reply SKB.\n");
+        #endif
+        return;
+
+    }
+    
+    nlh=nlmsg_put(skb_out,0,0,NLMSG_DONE,sizeof(struct nl464data),0);  
+    NETLINK_CB(skb_out).dst_group = 0; /* not in mcast group */
+    memcpy(nlmsg_data(nlh),nl464d,sizeof(struct nl464data));
+
+    res=nlmsg_unicast(nlsock,skb_out,src_pid);
+
+    if(res<0){
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] NETLINK; Failed to Send Reply.\n");
+        #endif
+    }
     
 }
 
