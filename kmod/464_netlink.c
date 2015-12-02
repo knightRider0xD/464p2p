@@ -15,6 +15,7 @@
 #include "464_netlink.h"
 #include "464_tables.h"
 
+#define VERBOSE_464P2P
 
 /********************************
  * Init functions for XLAT table
