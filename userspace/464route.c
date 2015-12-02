@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 
 #ifndef NETLINK_464P2P
-#define NETLINK_464P2P           46
+#define NETLINK_464P2P           24
 #endif /* NETLINK_464P2P */
 
 //#define NL464_DATA              0x80000000
