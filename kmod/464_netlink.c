@@ -51,6 +51,9 @@ int res;
 void on_netlink_receive(struct sk_buff *skb)
 {
     
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] NETLINK; Packet Received.\n");
+    #endif
 
     res = 1;
     
@@ -72,6 +75,9 @@ void on_netlink_receive(struct sk_buff *skb)
     
     if(!((nl464d->flags & NL464_DATA4)&&(nl464d->flags & NL464_DATA6))){
         //no addresses present
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] NETLINK; Missing Packet Data; Ignoring.\n");
+        #endif
         return;
     }
     

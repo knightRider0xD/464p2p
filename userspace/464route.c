@@ -11,7 +11,9 @@
 #define NETLINK_464P2P           24
 #endif /* NETLINK_464P2P */
 
-//#define NL464_DATA              0x80000000
+#define NL464_ACK               0x80000000
+#define NL464_DATA4             0x40000000
+#define NL464_DATA6             0x20000000
 
 //#define NL464_LOCAL_STATUS4     0x8000
 //#define NL464_LOCAL_STATUS6     0x4000
@@ -49,14 +51,14 @@ int main(int argc, char *argv[])
     // Determine Command
     if(strcmp(argv[0], "local")){
         if(strcmp(argv[1], "add")){
-            data.flags = NL464_LOCAL_ADD;
+            data.flags = data.flags | NL464_LOCAL_ADD;
         } else {
             printf("Invalid command %s. Exiting.\n",argv[1]);
             return -2;
         }
     } else if(strcmp(argv[0], "remote")){
         if(strcmp(argv[1], "add")){
-            data.flags = NL464_REMOTE_ADD;
+            data.flags = data.flags | NL464_REMOTE_ADD;
         } else {
             printf("Invalid command %s. Exiting.\n",argv[1]);
             return -2;
@@ -72,6 +74,7 @@ int main(int argc, char *argv[])
         printf("Invalid IPv4 Address %s. Exiting.\n",argv[2]);
         return -5;
     }
+    data.flags = data.flags | NL464_DATA4;
     
     // Get IPv6 Address
     err = inet_pton(AF_INET6, argv[3], &data.in6);
@@ -79,6 +82,7 @@ int main(int argc, char *argv[])
         printf("Invalid IPv6 Address %s. Exiting.\n",argv[3]);
         return -6;
     }
+    data.flags = data.flags | NL464_DATA6;
     
     // Open netlink socket
     sock=socket(PF_NETLINK, SOCK_RAW, NETLINK_464P2P);
