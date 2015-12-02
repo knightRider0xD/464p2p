@@ -50,33 +50,39 @@ int main(int argc, char *argv[])
         if(strcmp(argv[1], "add")){
             data.flags = NL464_LOCAL_ADD;
         } else {
+            printf("Invalid command %s. Exiting.\n",argv[1]);
             return -2;
         }
     } else if(strcmp(argv[0], "remote")){
         if(strcmp(argv[1], "add")){
             data.flags = NL464_REMOTE_ADD;
         } else {
+            printf("Invalid command %s. Exiting.\n",argv[1]);
             return -2;
         }
     } else {
+        printf("Invalid command %s. Exiting.\n",argv[0]);
         return -2;
     }
     
     // Get IPv4 Address
     err = inet_pton(AF_INET, argv[2], &data.in4);
     if(err<0){
+        printf("Invalid IPv4 Address %s. Exiting.\n",argv[2]);
         return -5;
     }
     
     // Get IPv6 Address
     err = inet_pton(AF_INET6, argv[3], &data.in6);
     if(err<0){
+        printf("Invalid IPv6 Address %s. Exiting.\n",argv[3]);
         return -6;
     }
     
     // Open netlink socket
     sock=socket(PF_NETLINK, SOCK_RAW, NETLINK_464P2P);
     if(sock<0){
+        printf("Error opening Netlink Socket. Exiting.\n");
         return -9;
     }
 
