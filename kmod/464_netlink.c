@@ -59,12 +59,12 @@ void on_netlink_receive(struct sk_buff *skb)
     res = 1;
     
     // Validate packet long enough for headers
-    if(skb->data_len< sizeof(struct nlmsghdr)+sizeof(struct nl464data)){
+    /*if(skb->data_len< sizeof(struct nlmsghdr)+sizeof(struct nl464data)){
         #ifdef VERBOSE_464P2P
             printk(KERN_INFO "[464P2P] NETLINK; Packet too short; Ignoring.\n");
         #endif
         return;
-    }
+    }*/
     
     // get pointers to netlink headers
     nlh=(struct nlmsghdr*) skb->data;
