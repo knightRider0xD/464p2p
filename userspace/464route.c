@@ -41,7 +41,7 @@ struct msghdr msg;
 int main(int argc, char *argv[])
 {
     
-    if(argc != 5){
+    if(argc < 4){
         printf("Invalid arguments: Expected 4, recieved %d. Exiting.\n",argc);
         return -1;
     }
