@@ -93,6 +93,9 @@ void on_netlink_receive(struct sk_buff *skb)
         memcpy(nl464_in6,&(nl464d->in6),sizeof(struct in6_addr));
         
         res = local_xlat_add(nl464_in6, nl464_in4);
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] NETLINK; Added Local Entry.\n");
+        #endif
     } else if(nl464d->flags & NL464_REMOTE_ADD){
         nl464_in4 = kzalloc(sizeof(struct in_addr),GFP_ATOMIC);
         memcpy(nl464_in4,&(nl464d->in4),sizeof(struct in_addr));
@@ -101,6 +104,9 @@ void on_netlink_receive(struct sk_buff *skb)
         memcpy(nl464_in6,&(nl464d->in6),sizeof(struct in6_addr));
         
         res = remote_xlat_add(nl464_in6, nl464_in4);
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] NETLINK; Added Remote Entry.\n");
+        #endif
     }
     
     skb_out = nlmsg_new(sizeof(struct nl464data),0);
