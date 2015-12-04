@@ -224,7 +224,7 @@ struct in_addr * remote_64_xlat(struct in6_addr *remote_6_addr){
         //#endif
         
         #ifdef VERBOSE_464P2P
-            printk(KERN_INFO "[464P2P] IN; My Addr %pI6 , Pkt Addr %pI6 .\n",current_host->in6,remote_6_addr);
+            printk(KERN_INFO "[464P2P] IN; XLAT Addr %pI6 , Pkt Addr %pI6 .\n",current_host->in6,remote_6_addr);
         #endif
         
         // If match return pointer to corresponding IPv4 address
@@ -251,7 +251,7 @@ struct in6_addr * remote_46_xlat(struct in_addr *remote_4_addr){
         //#endif
         
         #ifdef VERBOSE_464P2P
-            printk(KERN_INFO "[464P2P] OUT; My Addr %pI4 , Pkt Addr %pI4 .\n",current_host->in4,remote_4_addr);
+            printk(KERN_INFO "[464P2P] OUT; XLAT Addr %pI4 , Pkt Addr %pI4 .\n",current_host->in4,remote_4_addr);
         #endif
         
         // If match return pointer to corresponding IPv4 address

@@ -85,6 +85,11 @@ void on_netlink_receive(struct sk_buff *skb)
         return;
     }
     
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] NETLINK; Flags %#010x, IPv4 %pI4 , IPv6 %pI6 .\n",nl464d->flags,nl464d->in4,nl464d->in6);
+    #endif
+    
+    
     if(nl464d->flags & NL464_LOCAL_ADD){
         nl464_in4 = kzalloc(sizeof(struct in_addr),GFP_ATOMIC);
         memcpy(nl464_in4,&(nl464d->in4),sizeof(struct in_addr));
