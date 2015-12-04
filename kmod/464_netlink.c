@@ -43,6 +43,9 @@ struct nl464data {
 struct nlmsghdr *nlh;
 struct nl464data *nl464d;
 
+struct in_addr *nl464_in4;
+struct in6_addr *nl464_in6;
+
 int src_pid;
 
 struct sk_buff *skb_out;
@@ -83,9 +86,21 @@ void on_netlink_receive(struct sk_buff *skb)
     }
     
     if(nl464d->flags & NL464_LOCAL_ADD){
-        res = local_xlat_add(&(nl464d->in6), &(nl464d->in4));
+        nl464_in4 = kzalloc(sizeof(struct in_addr),GFP_ATOMIC);
+        memcpy(nl464_in4,&(nl464d->in4),sizeof(struct in_addr));
+        
+        nl464_in6 = kzalloc(sizeof(struct in6_addr),GFP_ATOMIC);
+        memcpy(nl464_in6,&(nl464d->in6),sizeof(struct in6_addr));
+        
+        res = local_xlat_add(nl464_in6, nl464_in4);
     } else if(nl464d->flags & NL464_REMOTE_ADD){
-        res = remote_xlat_add(&(nl464d->in6), &(nl464d->in4));
+        nl464_in4 = kzalloc(sizeof(struct in_addr),GFP_ATOMIC);
+        memcpy(nl464_in4,&(nl464d->in4),sizeof(struct in_addr));
+        
+        nl464_in6 = kzalloc(sizeof(struct in6_addr),GFP_ATOMIC);
+        memcpy(nl464_in6,&(nl464d->in6),sizeof(struct in6_addr));
+        
+        res = remote_xlat_add(nl464_in6, nl464_in4);
     }
     
     skb_out = nlmsg_new(sizeof(struct nl464data),0);
