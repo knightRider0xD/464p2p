@@ -41,43 +41,43 @@ struct msghdr msg;
 int main(int argc, char *argv[])
 {
     
-    if(argc < 4){
-        printf("Invalid arguments: Expected 4, recieved %d. Exiting.\n",argc);
+    if(argc < 5){
+        printf("Invalid arguments: Expected 5, recieved %d. Exiting.\n",argc);
         return -1;
     }
     
     // Determine Command
-    if(strcmp(argv[0], "local")){
-        if(strcmp(argv[1], "add")){
+    if(!strcmp(argv[1], "local")){
+        if(!strcmp(argv[2], "add")){
             data.flags = data.flags | NL464_LOCAL_ADD;
         } else {
-            printf("Invalid command %s. Exiting.\n",argv[1]);
+            printf("Invalid command %s. Exiting.\n",argv[2]);
             return -2;
         }
-    } else if(strcmp(argv[0], "remote")){
-        if(strcmp(argv[1], "add")){
+    } else if(!strcmp(argv[1], "remote")){
+        if(!strcmp(argv[2], "add")){
             data.flags = data.flags | NL464_REMOTE_ADD;
         } else {
-            printf("Invalid command %s. Exiting.\n",argv[1]);
+            printf("Invalid command %s. Exiting.\n",argv[2]);
             return -2;
         }
     } else {
-        printf("Invalid command %s. Exiting.\n",argv[0]);
+        printf("Invalid command %s. Exiting.\n",argv[1]);
         return -2;
     }
     
     // Get IPv4 Address
-    err = inet_pton(AF_INET, argv[2], &data.in4);
+    err = inet_pton(AF_INET, argv[3], &data.in4);
     if(err<0){
-        printf("Invalid IPv4 Address %s. Exiting.\n",argv[2]);
+        printf("Invalid IPv4 Address %s. Exiting.\n",argv[3]);
         return -5;
     }
     data.flags = data.flags | NL464_DATA4;
     
     // Get IPv6 Address
-    err = inet_pton(AF_INET6, argv[3], &data.in6);
+    err = inet_pton(AF_INET6, argv[4], &data.in6);
     if(err<0){
-        printf("Invalid IPv6 Address %s. Exiting.\n",argv[3]);
+        printf("Invalid IPv6 Address %s. Exiting.\n",argv[4]);
         return -6;
     }
     data.flags = data.flags | NL464_DATA6;
