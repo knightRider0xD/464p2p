@@ -86,7 +86,7 @@ void on_netlink_receive(struct sk_buff *skb)
     }
     
     #ifdef VERBOSE_464P2P
-        printk(KERN_INFO "[464P2P] NETLINK; Flags %#010x, IPv4 %pI4 , IPv6 %pI6 .\n",nl464d->flags,nl464d->in4,nl464d->in6);
+        printk(KERN_INFO "[464P2P] NETLINK; Flags %#010x, IPv4 %pI4 , IPv6 %pI6 .\n",nl464d->flags,&(nl464d->in4),&(nl464d->in6));
     #endif
     
     
