@@ -15,7 +15,7 @@ int main(int argc, char**argv)
 
     if (argc != 2)
     {
-        printf("Usage:  udp-recv4 <Listen Portnum>\n");
+        printf("Usage:  server6 <Listen Portnum>\n");
         exit(1);
     }
 

@@ -14,7 +14,7 @@ int main(int argc, char**argv)
 
     if (argc != 4)
     {
-        printf("Usage:  udp-send4 <Dest IPv4 address> <Dest Portnum> <Message>\n");
+        printf("Usage:  client4 <Dest IPv4 address> <Dest Portnum> <Message>\n");
         exit(1);
     }
 
