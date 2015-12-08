@@ -105,18 +105,23 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     in4_hdr->tos               = (in6_hdr->priority<<4) + (in6_hdr->flow_lbl[0]>>4);
     
     
-    memset(&fl4, 0, sizeof(fl4));
+    memset(&fl4, 0, sizeof(struct flowi4));
     fl4.saddr = s_4_addr->s_addr;
     fl4.daddr = d_4_addr->s_addr;
+    fl4.flowi4_tos = RT_TOS(in4_hdr->tos);
     
+    
+    #ifdef VERBOSE_464P2P
+        printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Prep Packet.\n");
+    #endif
+    
+    in_dst = (struct dst_entry *) ip_route_output_key(&init_net, &fl4);
+    skb_dst_set(in_skb, in_dst);
+    in_skb->dev = in_dst->dev;
     
     #ifdef VERBOSE_464P2P
         printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Dispatch Packet.\n");
     #endif
-    
-    in_dst = (struct dst_entry *) ip_route_output_key(&init_net, &fl4);//&fl.u.ip4);//&fl4);
-    skb_dst_set(in_skb, in_dst);
-    in_skb->dev = in_dst->dev;
     
     if(ip_local_out(in_skb) < 0){
         #ifdef VERBOSE_464P2P
