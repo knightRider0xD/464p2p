@@ -1,8 +1,8 @@
 all: h1
 
-h1: init update mkkmod ldkmod mkrt config1 mktest dotest1
+h1: init update mkkmod ldkmod mkrt config1 mktest
 
-h2: init update mkkmod ldkmod mkrt config2 mktest dotest2
+h2: init update mkkmod ldkmod mkrt config2 mktest
 
 config1: cfgif1 cfgrt1
 
