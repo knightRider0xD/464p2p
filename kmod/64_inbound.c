@@ -106,7 +106,7 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
     
     
     memset(&fl4, 0, sizeof(fl4));
-    fl4.saddr = s_4_addr->s_addr;
+    //fl4.saddr = s_4_addr->s_addr;
     fl4.daddr = d_4_addr->s_addr;    
     
     #ifdef VERBOSE_464P2P
