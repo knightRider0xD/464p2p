@@ -113,7 +113,12 @@ unsigned int on_nf_hook_out(unsigned int hooknum, struct sk_buff *skb, const str
         printk(KERN_INFO "[464P2P] OUT; 4->6 XLAT Done; Dispatch packet.\n");
     #endif
     
-    out_dst = (struct dst_entry *) ip6_route_output(&init_net, NULL, &fl6);
+    if((out_dst = (struct dst_entry *) ip6_route_output(&init_net, NULL, &fl6))<0){
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] OUT; Error Routing 6 Packet; DROP.\n");
+        #endif
+        return NF_DROP;
+    }
     skb_dst_set(out_skb, out_dst);
     out_skb->dev = out_dst->dev;
     

@@ -113,8 +113,13 @@ unsigned int on_nf_hook_in(unsigned int hooknum, struct sk_buff *skb, const stru
         printk(KERN_INFO "[464P2P] IN; 6->4 XLAT Done; Dispatch Packet.\n");
     #endif
     
-    in_dst = (struct dst_entry *) ip_route_output_key(&init_net, &fl4);
-    printk(KERN_INFO "[464P2P] %d\n",in_dst);
+    if((in_dst = (struct dst_entry *) ip_route_output_key(&init_net, &fl4))<0){
+        #ifdef VERBOSE_464P2P
+            printk(KERN_INFO "[464P2P] IN; Error Routing 4 Packet; DROP.\n");
+        #endif
+        return NF_DROP;
+    }
+    
     skb_dst_set(in_skb, in_dst);
     in_skb->dev = in_dst->dev;
 
